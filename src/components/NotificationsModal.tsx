@@ -2,7 +2,7 @@ import React from 'react';
 import { useLedger } from '../context/LedgerContext';
 
 export const NotificationsModal: React.FC = () => {
-  const { isNotificationsOpen, setIsNotificationsOpen, unreconciledCount } = useLedger();
+  const { isNotificationsOpen, setIsNotificationsOpen, unreconciledCount, netProfit, transactions } = useLedger();
 
   if (!isNotificationsOpen) return null;
 
@@ -10,7 +10,7 @@ export const NotificationsModal: React.FC = () => {
     {
       id: '1',
       title: 'Q4 Estimated Tax Safe Harbor Achieved',
-      desc: 'Based on your $18,420.50 net profit, you have satisfied IRS safe harbor thresholds for quarter 4.',
+      desc: `Based on your $${netProfit.toLocaleString('en-US', { minimumFractionDigits: 2 })} net profit, you have satisfied IRS safe harbor thresholds for quarter 4.`,
       time: '2h ago',
       icon: 'verified',
       color: 'text-[#006c4a] bg-[#82f5c1]/30',
@@ -18,15 +18,15 @@ export const NotificationsModal: React.FC = () => {
     {
       id: '2',
       title: `${unreconciledCount} Transactions Require Attention`,
-      desc: 'Uber Technologies ($38.40) & Figma Professional ($110.00) are flagged for missing receipt photo proof.',
+      desc: unreconciledCount > 0 ? `${unreconciledCount} transactions are flagged for missing receipt photo proof.` : 'All transactions are reconciled with receipt photo proof.',
       time: '5h ago',
-      icon: 'warning',
-      color: 'text-[#ba1a1a] bg-[#ffdad6]',
+      icon: unreconciledCount > 0 ? 'warning' : 'check_circle',
+      color: unreconciledCount > 0 ? 'text-[#ba1a1a] bg-[#ffdad6]' : 'text-[#006c4a] bg-[#82f5c1]/30',
     },
     {
       id: '3',
       title: 'Double-Entry Vault Synced',
-      desc: 'All 34 entries backed up to client-side encrypted IndexedDB store.',
+      desc: `All ${transactions.length} entries backed up to client-side encrypted IndexedDB store.`,
       time: 'Yesterday',
       icon: 'cloud_done',
       color: 'text-[#565e74] bg-[#e5eeff]',

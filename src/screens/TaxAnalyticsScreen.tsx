@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLedger } from '../context/LedgerContext';
-import { downloadFile, generateLedgerCSV, generateTaxBundleZip, generateSocialServicesReportText } from '../utils/taxExport';
+import { downloadFile, generateLedgerCSV, generateTaxBundleZip, generateSocialServicesReportHTML } from '../utils/taxExport';
 
 export const TaxAnalyticsScreen: React.FC = () => {
   const {
@@ -19,16 +19,35 @@ export const TaxAnalyticsScreen: React.FC = () => {
     setIsSocialServicesOpen,
     setActiveScreen,
     showToast,
+    userProfile,
   } = useLedger();
 
-  const [selectedPeriod, setSelectedPeriod] = useState('Tax Year 2024 (Q1–Q4)');
+  const [selectedPeriod, setSelectedPeriod] = useState('Tax Year 2026 (Q1–Q4)');
   const [isDownloadingZip, setIsDownloadingZip] = useState(false);
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
   const [isDownloadingCsv, setIsDownloadingCsv] = useState(false);
   const [isDownloadingSocial, setIsDownloadingSocial] = useState(false);
   const [isPeriodMenuOpen, setIsPeriodMenuOpen] = useState(false);
 
-  const reserveNeeded = Math.round(netProfit * 0.25);
+  const expenses = transactions.filter(t => t.type === 'expense');
+
+  const line27a = expenses.filter(t => t.categoryLine === 'Line 27a').reduce((acc, t) => acc + t.amount, 0);
+  const line9 = expenses.filter(t => t.categoryLine === 'Line 9').reduce((acc, t) => acc + t.amount, 0);
+  const line18 = expenses.filter(t => t.categoryLine === 'Line 18').reduce((acc, t) => acc + t.amount, 0);
+  const line22 = expenses.filter(t => t.categoryLine === 'Line 22').reduce((acc, t) => acc + t.amount, 0);
+  const line24b = expenses.filter(t => t.categoryLine === 'Line 24b').reduce((acc, t) => acc + t.amount, 0);
+
+  const otherExpenses = expenses.filter(t => !['Line 27a', 'Line 9', 'Line 18', 'Line 22', 'Line 24b'].includes(t.categoryLine || ''));
+  const otherSum = otherExpenses.reduce((acc, t) => acc + t.amount, 0);
+
+  const getPercent = (val: number) => totalExpenses > 0 ? Math.round((val / totalExpenses) * 100) : 0;
+
+  const line27aPct = getPercent(line27a);
+  const line9Pct = getPercent(line9);
+  const line18Pct = getPercent(line18);
+  const line22Pct = getPercent(line22);
+  const line24bPct = getPercent(line24b);
+  const otherPct = getPercent(otherSum);
 
   const handleDownloadZip = async () => {
     setIsDownloadingZip(true);
@@ -37,10 +56,13 @@ export const TaxAnalyticsScreen: React.FC = () => {
         transactions,
         grossIncome,
         totalExpenses,
-        netProfit
+        netProfit,
+        userProfile
       );
-      downloadFile('LedgerLens_TaxBundle_2024.zip', zipBlob, 'application/zip');
-      showToast('Complete Tax Bundle ZIP downloaded (18.4 MB)', 'archive');
+      const sizeMb = (zipBlob.size / (1024 * 1024)).toFixed(1);
+      const sizeDisplay = zipBlob.size >= 1024 * 1024 ? `${sizeMb} MB` : `${Math.round(zipBlob.size / 1024)} KB`;
+      downloadFile('LedgerLens_TaxBundle_2026.zip', zipBlob, 'application/zip');
+      showToast(`Complete Tax Bundle ZIP downloaded (${sizeDisplay})`, 'archive');
     } catch (e) {
       showToast('Downloaded Complete Tax Package', 'archive');
     } finally {
@@ -53,10 +75,10 @@ export const TaxAnalyticsScreen: React.FC = () => {
     setTimeout(() => {
       setIsDownloadingPdf(false);
       // Trigger Schedule C Summary statement
-      const summaryText = `LEDGERLENS TAX YEAR 2024 IRS SCHEDULE C OFFICIAL ALLOCATIONS
+      const summaryText = `LEDGERLENS TAX YEAR 2026 IRS SCHEDULE C OFFICIAL ALLOCATIONS
 =============================================================
-Taxpayer: Alex Vance (Apex Design Studio LLC)
-Tax Period: 2024 Annual (Q1-Q4)
+Taxpayer: ${userProfile?.name || 'User'} (${userProfile?.businessName || 'Business'})
+Tax Period: 2026 Annual (Q1-Q4)
 Status: Reconciled & Audit-Proofed
 
 PART I: INCOME
@@ -66,19 +88,20 @@ Line 1: Gross receipts or sales: $${grossIncome.toLocaleString('en-US', { minimu
 Line 3: Gross profit: $${grossIncome.toLocaleString('en-US', { minimumFractionDigits: 2 })}
 
 PART II: EXPENSES
-Line 9:   Car & Travel: $927.50
-Line 18:  Office Expense (Software): $742.00
-Line 22:  Supplies: $445.20
-Line 24b: Deductible Meals (50%): $296.80
-Line 27a: Other Expenses (Equipment & Hardware): $1,298.50
+Line 9:   Car & Travel: $${line9.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+Line 18:  Office Expense (Software): $${line18.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+Line 22:  Supplies: $${line22.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+Line 24b: Deductible Meals (50%): $${line24b.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+Line 27a: Other Expenses (Equipment & Hardware): $${line27a.toLocaleString('en-US', { minimumFractionDigits: 2 })}
 Line 28:  Total Expenses: $${totalExpenses.toLocaleString('en-US', { minimumFractionDigits: 2 })}
 
 PART III: NET PROFIT
 Line 31: Net Profit: $${netProfit.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-Estimated Safe Harbor Tax Reserve (25%): $${reserveNeeded.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+Estimated Safe Harbor Tax Reserve (25%): $${(netProfit * 0.25).toLocaleString('en-US', { minimumFractionDigits: 2 })}
 Audit Readiness: ${auditReadinessPercent}% (${vaultedCount} Verified Photo Proofs)
 `;
-      downloadFile('IRS_Schedule_C_Summary_2024.txt', summaryText, 'text/plain');
+      const htmlContent = `<!DOCTYPE html><html><head><title>Schedule C Summary 2026</title></head><body style="font-family: monospace; white-space: pre-wrap; padding: 20px;">${summaryText}</body></html>`;
+      downloadFile('IRS_Schedule_C_Summary_2026.html', htmlContent, 'text/html');
       showToast('Schedule C statement exported', 'picture_as_pdf');
     }, 800);
   };
@@ -88,7 +111,7 @@ Audit Readiness: ${auditReadinessPercent}% (${vaultedCount} Verified Photo Proof
     setTimeout(() => {
       setIsDownloadingCsv(false);
       const csv = generateLedgerCSV(transactions);
-      downloadFile('LedgerLens_TurboTax_QuickBooks_2024.csv', csv, 'text/csv');
+      downloadFile('LedgerLens_TurboTax_QuickBooks_2026.csv', csv, 'text/csv');
       showToast('Ledger CSV formatted for TurboTax ready', 'table_chart');
     }, 700);
   };
@@ -97,18 +120,21 @@ Audit Readiness: ${auditReadinessPercent}% (${vaultedCount} Verified Photo Proof
     setIsDownloadingSocial(true);
     setTimeout(() => {
       setIsDownloadingSocial(false);
-      const textReport = generateSocialServicesReportText(
+      const htmlReport = generateSocialServicesReportHTML(
         transactions,
         grossIncome,
         totalExpenses,
-        netProfit
+        netProfit,
+        undefined,
+        undefined,
+        userProfile
       );
       downloadFile(
-        'Social_Services_Income_Verification_Report_2024.txt',
-        textReport,
-        'text/plain;charset=utf-8;'
+        'Social_Services_Income_Verification_Report_2026.html',
+        htmlReport,
+        'text/html'
       );
-      showToast('Social Services PDF statement exported', 'assignment_ind');
+      showToast('Social Services statement exported', 'assignment_ind');
     }, 750);
   };
 
@@ -136,7 +162,7 @@ Audit Readiness: ${auditReadinessPercent}% (${vaultedCount} Verified Photo Proof
 
             {isPeriodMenuOpen && (
               <div className="absolute left-0 top-11 z-30 w-64 bg-[#ffffff] rounded-xl shadow-xl border border-[#e5eeff] p-1.5 animate-in fade-in zoom-in-95 duration-150">
-                {['Tax Year 2024 (Q1–Q4)', 'Q4 2024 (Oct–Dec)', 'Q3 2024 (Jul–Sep)', 'Custom Tax Window'].map(
+                {['Tax Year 2026 (Q1–Q4)', 'Q4 2026 (Oct–Dec)', 'Q3 2026 (Jul–Sep)', 'Custom Tax Window'].map(
                   (period) => (
                     <button
                       key={period}
@@ -368,89 +394,123 @@ Audit Readiness: ${auditReadinessPercent}% (${vaultedCount} Verified Photo Proof
 
         {/* Segmented Proportional Visual Bar */}
         <div className="w-full h-3 rounded-full flex overflow-hidden shadow-inner gap-0.5">
-          <div className="h-full bg-[#0b1c30] rounded-l-full" style={{ width: '35%' }} title="Equipment 35%" />
-          <div className="h-full bg-[#006c4a]" style={{ width: '25%' }} title="Travel & Mileage 25%" />
-          <div className="h-full bg-[#565e74]" style={{ width: '20%' }} title="Software 20%" />
-          <div className="h-full bg-[#68dba9]" style={{ width: '12%' }} title="Office Supplies 12%" />
-          <div className="h-full bg-[#d3e4fe] rounded-r-full" style={{ width: '8%' }} title="Meals 8%" />
+          {line27aPct > 0 && <div className="h-full bg-[#0b1c30]" style={{ width: `${line27aPct}%` }} title={`Equipment ${line27aPct}%`} />}
+          {line9Pct > 0 && <div className="h-full bg-[#006c4a]" style={{ width: `${line9Pct}%` }} title={`Travel & Mileage ${line9Pct}%`} />}
+          {line18Pct > 0 && <div className="h-full bg-[#565e74]" style={{ width: `${line18Pct}%` }} title={`Software ${line18Pct}%`} />}
+          {line22Pct > 0 && <div className="h-full bg-[#68dba9]" style={{ width: `${line22Pct}%` }} title={`Office Supplies ${line22Pct}%`} />}
+          {line24bPct > 0 && <div className="h-full bg-[#d3e4fe]" style={{ width: `${line24bPct}%` }} title={`Meals ${line24bPct}%`} />}
+          {otherPct > 0 && <div className="h-full bg-[#e5eeff]" style={{ width: `${otherPct}%` }} title={`Other ${otherPct}%`} />}
         </div>
 
         {/* Category Line Items list */}
         <div className="space-y-1">
-          <div className="flex items-center justify-between p-1.5 rounded-lg hover:bg-[#eff4ff] transition-colors">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <span className="w-3 h-3 rounded-full bg-[#0b1c30] shrink-0" />
-              <span className="font-body-md text-[13px] text-[#0b1c30] truncate">
-                Equipment & Tech (Line 27a)
-              </span>
+          {line27a > 0 && (
+            <div className="flex items-center justify-between p-1.5 rounded-lg hover:bg-[#eff4ff] transition-colors">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <span className="w-3 h-3 rounded-full bg-[#0b1c30] shrink-0" />
+                <span className="font-body-md text-[13px] text-[#0b1c30] truncate">
+                  Equipment & Tech (Line 27a)
+                </span>
+              </div>
+              <div className="text-right shrink-0">
+                <span className="font-label-lg text-[13px] font-semibold text-[#0b1c30] tabular-nums">
+                  ${line27a.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                </span>
+                <span className="font-body-sm text-[11px] text-[#45464d] ml-1.5">{line27aPct}%</span>
+              </div>
             </div>
-            <div className="text-right shrink-0">
-              <span className="font-label-lg text-[13px] font-semibold text-[#0b1c30] tabular-nums">
-                $1,298.50
-              </span>
-              <span className="font-body-sm text-[11px] text-[#45464d] ml-1.5">35%</span>
-            </div>
-          </div>
+          )}
 
-          <div className="flex items-center justify-between p-1.5 rounded-lg hover:bg-[#eff4ff] transition-colors">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <span className="w-3 h-3 rounded-full bg-[#006c4a] shrink-0" />
-              <span className="font-body-md text-[13px] text-[#0b1c30] truncate">
-                Travel & Car Mileage (Line 9)
-              </span>
+          {line9 > 0 && (
+            <div className="flex items-center justify-between p-1.5 rounded-lg hover:bg-[#eff4ff] transition-colors">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <span className="w-3 h-3 rounded-full bg-[#006c4a] shrink-0" />
+                <span className="font-body-md text-[13px] text-[#0b1c30] truncate">
+                  Travel & Car Mileage (Line 9)
+                </span>
+              </div>
+              <div className="text-right shrink-0">
+                <span className="font-label-lg text-[13px] font-semibold text-[#0b1c30] tabular-nums">
+                  ${line9.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                </span>
+                <span className="font-body-sm text-[11px] text-[#45464d] ml-1.5">{line9Pct}%</span>
+              </div>
             </div>
-            <div className="text-right shrink-0">
-              <span className="font-label-lg text-[13px] font-semibold text-[#0b1c30] tabular-nums">
-                $927.50
-              </span>
-              <span className="font-body-sm text-[11px] text-[#45464d] ml-1.5">25%</span>
-            </div>
-          </div>
+          )}
 
-          <div className="flex items-center justify-between p-1.5 rounded-lg hover:bg-[#eff4ff] transition-colors">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <span className="w-3 h-3 rounded-full bg-[#565e74] shrink-0" />
-              <span className="font-body-md text-[13px] text-[#0b1c30] truncate">
-                Software & Subscriptions (Line 18)
-              </span>
+          {line18 > 0 && (
+            <div className="flex items-center justify-between p-1.5 rounded-lg hover:bg-[#eff4ff] transition-colors">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <span className="w-3 h-3 rounded-full bg-[#565e74] shrink-0" />
+                <span className="font-body-md text-[13px] text-[#0b1c30] truncate">
+                  Software & Subscriptions (Line 18)
+                </span>
+              </div>
+              <div className="text-right shrink-0">
+                <span className="font-label-lg text-[13px] font-semibold text-[#0b1c30] tabular-nums">
+                  ${line18.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                </span>
+                <span className="font-body-sm text-[11px] text-[#45464d] ml-1.5">{line18Pct}%</span>
+              </div>
             </div>
-            <div className="text-right shrink-0">
-              <span className="font-label-lg text-[13px] font-semibold text-[#0b1c30] tabular-nums">
-                $742.00
-              </span>
-              <span className="font-body-sm text-[11px] text-[#45464d] ml-1.5">20%</span>
-            </div>
-          </div>
+          )}
 
-          <div className="flex items-center justify-between p-1.5 rounded-lg hover:bg-[#eff4ff] transition-colors">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <span className="w-3 h-3 rounded-full bg-[#68dba9] shrink-0" />
-              <span className="font-body-md text-[13px] text-[#0b1c30] truncate">
-                Office Supplies (Line 22)
-              </span>
+          {line22 > 0 && (
+            <div className="flex items-center justify-between p-1.5 rounded-lg hover:bg-[#eff4ff] transition-colors">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <span className="w-3 h-3 rounded-full bg-[#68dba9] shrink-0" />
+                <span className="font-body-md text-[13px] text-[#0b1c30] truncate">
+                  Office Supplies (Line 22)
+                </span>
+              </div>
+              <div className="text-right shrink-0">
+                <span className="font-label-lg text-[13px] font-semibold text-[#0b1c30] tabular-nums">
+                  ${line22.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                </span>
+                <span className="font-body-sm text-[11px] text-[#45464d] ml-1.5">{line22Pct}%</span>
+              </div>
             </div>
-            <div className="text-right shrink-0">
-              <span className="font-label-lg text-[13px] font-semibold text-[#0b1c30] tabular-nums">
-                $445.20
-              </span>
-              <span className="font-body-sm text-[11px] text-[#45464d] ml-1.5">12%</span>
-            </div>
-          </div>
+          )}
 
-          <div className="flex items-center justify-between p-1.5 rounded-lg hover:bg-[#eff4ff] transition-colors">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <span className="w-3 h-3 rounded-full bg-[#d3e4fe] shrink-0" />
-              <span className="font-body-md text-[13px] text-[#0b1c30] truncate">
-                Business Meals 50% (Line 24b)
-              </span>
+          {line24b > 0 && (
+            <div className="flex items-center justify-between p-1.5 rounded-lg hover:bg-[#eff4ff] transition-colors">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <span className="w-3 h-3 rounded-full bg-[#d3e4fe] shrink-0" />
+                <span className="font-body-md text-[13px] text-[#0b1c30] truncate">
+                  Business Meals 50% (Line 24b)
+                </span>
+              </div>
+              <div className="text-right shrink-0">
+                <span className="font-label-lg text-[13px] font-semibold text-[#0b1c30] tabular-nums">
+                  ${line24b.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                </span>
+                <span className="font-body-sm text-[11px] text-[#45464d] ml-1.5">{line24bPct}%</span>
+              </div>
             </div>
-            <div className="text-right shrink-0">
-              <span className="font-label-lg text-[13px] font-semibold text-[#0b1c30] tabular-nums">
-                $296.80
-              </span>
-              <span className="font-body-sm text-[11px] text-[#45464d] ml-1.5">8%</span>
+          )}
+
+          {otherSum > 0 && (
+            <div className="flex items-center justify-between p-1.5 rounded-lg hover:bg-[#eff4ff] transition-colors">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <span className="w-3 h-3 rounded-full bg-[#e5eeff] shrink-0" />
+                <span className="font-body-md text-[13px] text-[#0b1c30] truncate">
+                  Other Deductible Expenses
+                </span>
+              </div>
+              <div className="text-right shrink-0">
+                <span className="font-label-lg text-[13px] font-semibold text-[#0b1c30] tabular-nums">
+                  ${otherSum.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                </span>
+                <span className="font-body-sm text-[11px] text-[#45464d] ml-1.5">{otherPct}%</span>
+              </div>
             </div>
-          </div>
+          )}
+
+          {totalExpenses === 0 && (
+            <div className="text-center py-4 text-[#45464d] text-sm">
+              No expenses logged yet.
+            </div>
+          )}
         </div>
       </div>
 
@@ -500,7 +560,7 @@ Audit Readiness: ${auditReadinessPercent}% (${vaultedCount} Verified Photo Proof
             ) : (
               <>
                 <span className="material-symbols-outlined text-[18px]">download</span>
-                <span>Download Complete Archive (18.4 MB)</span>
+                <span>Download Complete Archive (.ZIP)</span>
               </>
             )}
           </button>

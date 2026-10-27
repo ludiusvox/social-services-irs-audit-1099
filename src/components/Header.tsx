@@ -6,6 +6,7 @@ export const Header: React.FC = () => {
     activeScreen,
     setIsNotificationsOpen,
     setIsProfileOpen,
+    userProfile,
   } = useLedger();
 
   const getScreenSubtitle = () => {
@@ -72,9 +73,9 @@ export const Header: React.FC = () => {
             className="w-11 h-11 flex items-center justify-center rounded-full hover:ring-2 hover:ring-[#82f5c1] transition-all"
           >
             <img
-              alt="Alex profile avatar"
+              alt="User profile avatar"
               className="w-8 h-8 rounded-full object-cover ring-2 ring-[#e5eeff] shadow-sm"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhpIvo9EJtWOeVGQbWQMTGndLgaCNEyu33Z38tOxdJmK7NMvSI_6ajwsnj4MXXQ5LSuMRW-TJVCAGzqnh-w7NyJBzmOYRskPcbxjJrUn3xbYmRYlIhUXvNYLxGIoAhp0nlE7HcvT1oUylV-j4mUYu3xU3oQWMxhW8Wm8hmmH87JlPiotssJIT75Q9KOKnd9ABaTdoHcCJRp7vPVAvOILkK-MOAZuE9M50vMpoW-e5Z9J55aGVijCi91Q"
+              src={userProfile?.profileImageUrl || "https://lh3.googleusercontent.com/aida-public/AB6AXuAhpIvo9EJtWOeVGQbWQMTGndLgaCNEyu33Z38tOxdJmK7NMvSI_6ajwsnj4MXXQ5LSuMRW-TJVCAGzqnh-w7NyJBzmOYRskPcbxjJrUn3xbYmRYlIhUXvNYLxGIoAhp0nlE7HcvT1oUylV-j4mUYu3xU3oQWMxhW8Wm8hmmH87JlPiotssJIT75Q9KOKnd9ABaTdoHcCJRp7vPVAvOILkK-MOAZuE9M50vMpoW-e5Z9J55aGVijCi91Q"}
               onError={(e) => {
                 const target = e.currentTarget;
                 target.style.display = 'none';
@@ -82,7 +83,7 @@ export const Header: React.FC = () => {
                 if (parent && !parent.querySelector('.profile-fallback')) {
                   const fallback = document.createElement('div');
                   fallback.className = 'profile-fallback w-8 h-8 rounded-full bg-[#131b2e] text-[#f8f9ff] flex items-center justify-center font-bold text-xs';
-                  fallback.innerText = 'A';
+                  fallback.innerText = userProfile?.name?.charAt(0)?.toUpperCase() || 'U';
                   parent.appendChild(fallback);
                 }
               }}

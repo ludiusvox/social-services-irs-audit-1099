@@ -3,17 +3,15 @@ import { useLedger } from '../context/LedgerContext';
 import { INITIAL_TRANSACTIONS } from '../data/initialData';
 
 export const ProfileModal: React.FC = () => {
-  const { isProfileOpen, setIsProfileOpen, showToast, transactions } = useLedger();
+  const { isProfileOpen, setIsProfileOpen, showToast, transactions, userProfile, saveUserProfile } = useLedger();
 
   if (!isProfileOpen) return null;
 
-  const handleResetData = () => {
+  const handleSignOut = () => {
     try {
-      localStorage.removeItem('ledgerlens_txs_v1');
-      localStorage.removeItem('ledgerlens_reserve_v1');
+      localStorage.removeItem('ledgerlens_profile_v1');
       window.location.reload();
     } catch {}
-    showToast('Reset to original sample data', 'refresh');
   };
 
   return (
@@ -28,13 +26,13 @@ export const ProfileModal: React.FC = () => {
         <div className="flex items-center justify-between pb-3 border-b border-[#e5eeff]">
           <div className="flex items-center gap-3">
             <img
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhpIvo9EJtWOeVGQbWQMTGndLgaCNEyu33Z38tOxdJmK7NMvSI_6ajwsnj4MXXQ5LSuMRW-TJVCAGzqnh-w7NyJBzmOYRskPcbxjJrUn3xbYmRYlIhUXvNYLxGIoAhp0nlE7HcvT1oUylV-j4mUYu3xU3oQWMxhW8Wm8hmmH87JlPiotssJIT75Q9KOKnd9ABaTdoHcCJRp7vPVAvOILkK-MOAZuE9M50vMpoW-e5Z9J55aGVijCi91Q"
-              alt="Alex Profile"
+              src={userProfile?.profileImageUrl || "https://lh3.googleusercontent.com/aida-public/AB6AXuAhpIvo9EJtWOeVGQbWQMTGndLgaCNEyu33Z38tOxdJmK7NMvSI_6ajwsnj4MXXQ5LSuMRW-TJVCAGzqnh-w7NyJBzmOYRskPcbxjJrUn3xbYmRYlIhUXvNYLxGIoAhp0nlE7HcvT1oUylV-j4mUYu3xU3oQWMxhW8Wm8hmmH87JlPiotssJIT75Q9KOKnd9ABaTdoHcCJRp7vPVAvOILkK-MOAZuE9M50vMpoW-e5Z9J55aGVijCi91Q"}
+              alt={userProfile?.name || "Profile"}
               className="w-12 h-12 rounded-full object-cover ring-2 ring-[#82f5c1]"
             />
             <div>
-              <h3 className="font-headline-sm text-[16px] font-bold text-[#0b1c30]">Alex Vance</h3>
-              <p className="text-[12px] text-[#45464d]">Principal • Apex Design Studio LLC</p>
+              <h3 className="font-headline-sm text-[16px] font-bold text-[#0b1c30]">{userProfile?.name || "User"}</h3>
+              <p className="text-[12px] text-[#45464d]">{userProfile?.businessName || "Business Name"}</p>
             </div>
           </div>
           <button
@@ -48,11 +46,11 @@ export const ProfileModal: React.FC = () => {
         <div className="space-y-2 text-[13px]">
           <div className="p-3 bg-[#eff4ff] rounded-xl flex items-center justify-between">
             <div className="flex items-center gap-2 text-[#0b1c30]">
-              <span className="material-symbols-outlined text-[18px] text-[#006c4a]">cloud_done</span>
-              <span>Double-Entry Sync</span>
+              <span className="material-symbols-outlined text-[18px] text-[#006c4a]">sd_storage</span>
+              <span>Double-Entry Local Storage</span>
             </div>
             <span className="text-[11px] font-semibold text-[#006c4a] bg-[#82f5c1]/30 px-2 py-0.5 rounded-full">
-              Active & Encrypted
+              Encrypted Offline
             </span>
           </div>
 
@@ -71,17 +69,17 @@ export const ProfileModal: React.FC = () => {
               <span className="material-symbols-outlined text-[18px] text-[#565e74]">account_balance</span>
               <span>Accounting Method</span>
             </div>
-            <span className="text-[11px] font-semibold text-[#0b1c30]">Cash / Schedule C</span>
+            <span className="text-[11px] font-semibold text-[#0b1c30]">{userProfile?.accountingMethod || "Cash / Schedule C"}</span>
           </div>
         </div>
 
         <div className="pt-2 flex flex-col gap-2">
           <button
-            onClick={handleResetData}
+            onClick={handleSignOut}
             className="w-full py-2.5 px-4 rounded-xl border border-[#c6c6cd] text-[#45464d] hover:text-[#ba1a1a] hover:border-[#ba1a1a] text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
           >
-            <span className="material-symbols-outlined text-[16px]">restart_alt</span>
-            <span>Reset Demo Transactions</span>
+            <span className="material-symbols-outlined text-[16px]">logout</span>
+            <span>Sign Out</span>
           </button>
         </div>
       </div>

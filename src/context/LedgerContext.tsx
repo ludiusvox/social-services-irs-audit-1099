@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, ReactNode } from 'react';
-import { ScreenId, Transaction, ReceiptData } from '../types';
+import { ScreenId, Transaction, ReceiptData, UserProfile } from '../types';
 import { INITIAL_TRANSACTIONS, INITIAL_RECEIPTS } from '../data/initialData';
 
 interface ToastState {
@@ -16,6 +16,8 @@ interface LogFormPreset {
 interface LedgerContextType {
   activeScreen: ScreenId;
   setActiveScreen: (screen: ScreenId) => void;
+  userProfile: UserProfile | null;
+  saveUserProfile: (profile: UserProfile) => void;
   transactions: Transaction[];
   addTransaction: (tx: Omit<Transaction, 'id' | 'createdAt' | 'group'>) => void;
   attachReceiptToTransaction: (txId: string, receipt: ReceiptData) => void;
@@ -54,14 +56,43 @@ const LedgerContext = createContext<LedgerContextType | undefined>(undefined);
 
 const STORAGE_KEY = 'ledgerlens_txs_v1';
 const RESERVE_KEY = 'ledgerlens_reserve_v1';
+const PROFILE_KEY = 'ledgerlens_profile_v1';
 
 export const LedgerProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [activeScreen, setActiveScreen] = useState<ScreenId>('overview');
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(() => {
+    try {
+      const saved = localStorage.getItem(PROFILE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.profileImageUrl && parsed.profileImageUrl.startsWith('blob:')) {
+           parsed.profileImageUrl = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(parsed.name || 'User') + '&background=82f5c1&color=006c4a';
+        }
+        return parsed;
+      }
+    } catch {}
+    return null;
+  });
+
+  const [activeScreen, setActiveScreen] = useState<ScreenId>(userProfile ? 'overview' : 'startup-profile');
   const [transactions, setTransactions] = useState<Transaction[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
-        return JSON.parse(saved);
+        const parsed: Transaction[] = JSON.parse(saved);
+        // Clean up any stale blob URLs from receipts that might have been saved in a prior session
+        return parsed.map(tx => {
+           if (tx.receipt && tx.receipt.imageUrl && tx.receipt.imageUrl.startsWith('blob:')) {
+              return {
+                 ...tx,
+                 receipt: {
+                    ...tx.receipt,
+                    imageUrl: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600" viewBox="0 0 400 600"><rect width="400" height="600" fill="%23f1f5f9"/><text x="200" y="280" font-family="sans-serif" font-size="28" font-weight="bold" text-anchor="middle" fill="%23475569">Image Expired</text><text x="200" y="320" font-family="sans-serif" font-size="16" text-anchor="middle" fill="%2364748b">Please re-attach receipt</text></svg>',
+                    thumbnailUrl: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23f1f5f9"/><text x="50" y="55" font-family="sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="%23ba1a1a">Expired</text></svg>'
+                 }
+              };
+           }
+           return tx;
+        });
       }
     } catch (e) {
       console.error('Failed to load transactions from localStorage', e);
@@ -102,6 +133,15 @@ export const LedgerProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
     }, 2800);
+  };
+
+  const saveUserProfile = (profile: UserProfile) => {
+    setUserProfile(profile);
+    try {
+      localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+    } catch {}
+    setActiveScreen('overview');
+    showToast('Profile saved successfully', 'person');
   };
 
   const addTransaction = (txData: Omit<Transaction, 'id' | 'createdAt' | 'group'>) => {
@@ -194,6 +234,8 @@ export const LedgerProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       value={{
         activeScreen,
         setActiveScreen,
+        userProfile,
+        saveUserProfile,
         transactions,
         addTransaction,
         attachReceiptToTransaction,

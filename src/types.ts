@@ -1,6 +1,13 @@
-export type ScreenId = 'overview' | 'log' | 'ledger' | 'tax-and-analytics';
+export type ScreenId = 'overview' | 'log' | 'ledger' | 'tax-and-analytics' | 'startup-profile';
 
 export type TransactionType = 'income' | 'expense';
+
+export interface UserProfile {
+  name: string;
+  businessName: string;
+  accountingMethod: string;
+  profileImageUrl: string;
+}
 
 export type PaymentMethod = 'cash' | 'paypal' | 'deposit' | 'card' | 'mastercard';
 

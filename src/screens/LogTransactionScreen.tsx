@@ -1,18 +1,19 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useLedger } from '../context/LedgerContext';
 import { PaymentMethod, TransactionType } from '../types';
 import { INITIAL_RECEIPTS } from '../data/initialData';
+import { takeReceiptPhotoNative } from '../utils/capacitorNative';
 
 export const LogTransactionScreen: React.FC = () => {
-  const { addTransaction, setActiveScreen, logFormPreset, setLogFormPreset } = useLedger();
+  const { addTransaction, setActiveScreen, logFormPreset, setLogFormPreset, transactions } = useLedger();
 
   const [type, setType] = useState<TransactionType>(logFormPreset?.type || 'income');
   const [amount, setAmount] = useState<string>('142.50');
   const [method, setMethod] = useState<PaymentMethod>('cash');
-  const [counterparty, setCounterparty] = useState<string>('Apex Design Studio');
+  const [counterparty, setCounterparty] = useState<string>('');
   const [category, setCategory] = useState<string>('client-payment');
-  const [date, setDate] = useState<string>('2024-05-18');
-  const [memo, setMemo] = useState<string>('Milestone 2 deliverable signoff. Invoice #LL-2024-884.');
+  const [date, setDate] = useState<string>(() => new Date().toISOString().split('T')[0]);
+  const [memo, setMemo] = useState<string>('');
   
   // Attached receipt state
   const [hasReceipt, setHasReceipt] = useState<boolean>(true);
@@ -23,6 +24,18 @@ export const LogTransactionScreen: React.FC = () => {
   const [isSaved, setIsSaved] = useState<boolean>(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleCameraCapture = async () => {
+    const photo = await takeReceiptPhotoNative();
+    if (photo) {
+      setReceiptImage(photo.url);
+      setReceiptFileName(photo.fileName);
+      setReceiptFileSize(photo.size);
+      setHasReceipt(true);
+    } else {
+      fileInputRef.current?.click();
+    }
+  };
 
   useEffect(() => {
     if (logFormPreset?.type) {
@@ -39,23 +52,34 @@ export const LogTransactionScreen: React.FC = () => {
 
   const handleTypeSwitch = (newType: TransactionType) => {
     setType(newType);
-    if (newType === 'expense' && counterparty === 'Apex Design Studio') {
-      setCounterparty('Office Supplies Mart');
-      setCategory('supplies');
-    } else if (newType === 'income' && counterparty === 'Office Supplies Mart') {
-      setCounterparty('Apex Design Studio');
-      setCategory('client-payment');
-    }
   };
+
+  const recentCounterparties = useMemo(() => {
+    const unique = new Set<string>();
+    for (const tx of transactions) {
+      if (tx.type === type && tx.counterparty) {
+        unique.add(tx.counterparty);
+      }
+      if (unique.size >= 3) break;
+    }
+    const list = Array.from(unique);
+    if (list.length === 0) {
+       return type === 'income' ? ['Client Payment', 'Stripe Payout', 'Upwork'] : ['Office Supplies', 'Software Sub', 'Travel'];
+    }
+    return list.slice(0, 3);
+  }, [transactions, type]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      const url = URL.createObjectURL(file);
-      setReceiptImage(url);
-      setReceiptFileName(file.name);
-      setReceiptFileSize(`${(file.size / (1024 * 1024)).toFixed(1)} MB`);
-      setHasReceipt(true);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setReceiptImage(reader.result as string);
+        setReceiptFileName(file.name);
+        setReceiptFileSize(`${(file.size / (1024 * 1024)).toFixed(1)} MB`);
+        setHasReceipt(true);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -89,7 +113,7 @@ export const LogTransactionScreen: React.FC = () => {
         date: date || new Date().toISOString().split('T')[0],
         time: 'Just now',
         paymentMethod: method,
-        accountLabel: method === 'cash' ? 'Cash' : method === 'paypal' ? 'PayPal' : 'Direct Deposit',
+        accountLabel: method === 'cash' ? 'Cash' : method === 'paypal' ? 'PayPal' : method === 'card' ? 'Card' : 'Direct Deposit',
         memo,
         tag: type === 'income' ? 'Invoice Cleared' : 'Logged',
         taxTag: type === 'income' ? 'Gross Inflow' : '100% Write-off',
@@ -211,7 +235,7 @@ export const LogTransactionScreen: React.FC = () => {
           </span>
         </label>
 
-        <div className="grid grid-cols-3 gap-2">
+        <div className={`grid ${type === 'expense' ? 'grid-cols-4' : 'grid-cols-3'} gap-2`}>
           {/* Cash */}
           <button
             type="button"
@@ -273,8 +297,32 @@ export const LogTransactionScreen: React.FC = () => {
                 account_balance
               </span>
             </div>
-            <span className="font-label-sm text-[12px] font-semibold">Direct Dep.</span>
+            <span className="font-label-sm text-[12px] font-semibold">{type === 'income' ? 'Direct Dep.' : 'Bank Acct'}</span>
           </button>
+
+          {/* Card (Expense Only) */}
+          {type === 'expense' && (
+            <button
+              type="button"
+              onClick={() => setMethod('card')}
+              className={`flex flex-col items-center justify-center p-3 rounded-xl transition-all ${
+                method === 'card'
+                  ? 'bg-[#d3e4fe] text-[#0b1c30] ring-2 ring-[#0b1c30]/50 shadow-sm'
+                  : 'bg-[#e5eeff] text-[#45464d] hover:bg-[#dce9ff]'
+              }`}
+            >
+              <div
+                className={`w-9 h-9 rounded-full flex items-center justify-center mb-1 ${
+                  method === 'card' ? 'bg-[#cbdbf5]' : 'bg-[#d3e4fe]'
+                }`}
+              >
+                <span className="material-symbols-outlined text-[20px] text-[#45464d]">
+                  credit_card
+                </span>
+              </div>
+              <span className="font-label-sm text-[12px] font-semibold">Card</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -303,7 +351,7 @@ export const LogTransactionScreen: React.FC = () => {
             <span className="font-label-sm text-[11px] text-[#45464d] whitespace-nowrap">
               Recent:
             </span>
-            {['Apex Design Studio', 'Stripe Payout', 'WeWork Offices'].map((name) => (
+            {recentCounterparties.map((name) => (
               <button
                 key={name}
                 type="button"
@@ -424,7 +472,7 @@ export const LogTransactionScreen: React.FC = () => {
                 <div className="flex items-center gap-3">
                   <button
                     type="button"
-                    onClick={() => fileInputRef.current?.click()}
+                    onClick={handleCameraCapture}
                     className="flex items-center gap-1 font-label-sm text-[11px] text-[#0b1c30] hover:text-[#006c4a] font-semibold transition-colors"
                   >
                     <span className="material-symbols-outlined text-[15px]">cached</span> Replace
@@ -444,7 +492,7 @@ export const LogTransactionScreen: React.FC = () => {
 
         {/* Capture Box / Android Photos Trigger */}
         <div
-          onClick={() => fileInputRef.current?.click()}
+          onClick={handleCameraCapture}
           className="relative rounded-xl p-5 bg-[#eff4ff]/70 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-[#e5eeff] transition-all active:scale-[0.99] group border-2 border-dashed border-[#76777d]/40"
         >
           <div className="w-12 h-12 rounded-full bg-[#d3e4fe] flex items-center justify-center text-[#0b1c30] group-hover:scale-110 transition-transform mb-1 shadow-xs">

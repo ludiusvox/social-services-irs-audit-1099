@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useLedger } from '../context/LedgerContext';
 import { INITIAL_RECEIPTS } from '../data/initialData';
 import { ReceiptData } from '../types';
+import { takeReceiptPhotoNative } from '../utils/capacitorNative';
 
 export const AttachReceiptModal: React.FC = () => {
   const { attachingTxId, setAttachingTxId, attachReceiptToTransaction, transactions } = useLedger();
@@ -13,15 +14,29 @@ export const AttachReceiptModal: React.FC = () => {
 
   const targetTx = transactions.find((t) => t.id === attachingTxId);
 
+  const handleNativeCamera = async () => {
+    const photo = await takeReceiptPhotoNative();
+    if (photo) {
+      setCustomFile({
+        name: photo.fileName,
+        url: photo.url,
+        size: photo.size,
+      });
+    }
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      const url = URL.createObjectURL(file);
-      setCustomFile({
-        name: file.name,
-        url,
-        size: `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
-      });
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCustomFile({
+          name: file.name,
+          url: reader.result as string,
+          size: `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
+        });
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -86,24 +101,34 @@ export const AttachReceiptModal: React.FC = () => {
 
         <div className="p-4 space-y-4 overflow-y-auto">
           {/* Native photo capture trigger */}
-          <label className="block border-2 border-dashed border-[#76777d]/40 rounded-xl p-5 bg-[#eff4ff]/60 hover:bg-[#e5eeff]/50 transition-colors text-center cursor-pointer">
-            <input
-              type="file"
-              accept="image/*"
-              capture="environment"
-              className="hidden"
-              onChange={handleFileChange}
-            />
-            <div className="w-12 h-12 rounded-full bg-[#d3e4fe] mx-auto flex items-center justify-center text-[#0b1c30] mb-2">
-              <span className="material-symbols-outlined text-[26px]">photo_camera</span>
-            </div>
-            <p className="font-headline-sm text-[14px] text-[#0b1c30] font-semibold">
-              {customFile ? customFile.name : 'Take photo or choose from library'}
-            </p>
-            <p className="font-body-sm text-[12px] text-[#45464d] mt-0.5">
-              Instant double-entry OCR matching & 256-bit vaulting
-            </p>
-          </label>
+          <div className="space-y-2">
+            <button
+              type="button"
+              onClick={handleNativeCamera}
+              className="w-full border-2 border-dashed border-[#76777d]/40 rounded-xl p-4 bg-[#eff4ff]/60 hover:bg-[#e5eeff]/50 transition-colors text-center cursor-pointer flex flex-col items-center justify-center"
+            >
+              <div className="w-12 h-12 rounded-full bg-[#d3e4fe] mx-auto flex items-center justify-center text-[#0b1c30] mb-2">
+                <span className="material-symbols-outlined text-[26px]">photo_camera</span>
+              </div>
+              <p className="font-headline-sm text-[14px] text-[#0b1c30] font-semibold">
+                {customFile ? customFile.name : 'Tap to Launch Capacitor Camera / Photos'}
+              </p>
+              <p className="font-body-sm text-[12px] text-[#45464d] mt-0.5">
+                Capacitor Native Camera & Image Selector
+              </p>
+            </button>
+
+            <label className="block text-center text-xs text-[#45464d] hover:underline cursor-pointer">
+              <span>Or choose file using Web Browser picker</span>
+              <input
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+            </label>
+          </div>
 
           {/* Preset sample vouchers */}
           <div className="space-y-2">
@@ -111,7 +136,7 @@ export const AttachReceiptModal: React.FC = () => {
               Or Select Verified Sample Voucher:
             </label>
             <div className="grid grid-cols-2 gap-2">
-              {(['apexSampleScan', 'officeSupplies', 'blueBottle', 'vanguard'] as const).map((key) => {
+              {(['apexSampleScan', 'officeDepot'] as const).map((key) => {
                 const item = INITIAL_RECEIPTS[key];
                 const isSelected = selectedPreset === key && !customFile;
                 return (

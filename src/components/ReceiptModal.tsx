@@ -51,7 +51,7 @@ export const ReceiptModal: React.FC = () => {
               src={selectedReceipt.imageUrl}
               onError={(e) => {
                 const target = e.currentTarget;
-                target.src = 'https://lh3.googleusercontent.com/aida-public/AB6AXuDGHYPZkdgZHgKCjLjKURA0XXTV0vbuuVOGLbeMMOpFat9DeQfDfqTk5vZcKwvWLxNvVoviVJHQIoitZUHkx2040Smbo1X6K99ucCnEecQ3Vj1jzIt6MkDaPnOG6WkvM1xhsK3HlDeMpeazpZ4gBYD2YnpgomHLk-7azebRVE4AkL6g7BViFI6OuEO0mdQ7SuWUsHRBzeLXuMTQwMp986PsiMJgsfHpYYM7g_o154_8v4PhYDEm99Ow9A';
+                target.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600" viewBox="0 0 400 600"><rect width="400" height="600" fill="%23ffdad6"/><text x="200" y="280" font-family="sans-serif" font-size="28" font-weight="bold" text-anchor="middle" fill="%23ba1a1a">Not Found</text><text x="200" y="320" font-family="sans-serif" font-size="16" text-anchor="middle" fill="%2393000a">Receipt image is broken or expired</text></svg>';
               }}
             />
             <div className="absolute bottom-3 right-3 px-3 py-1 bg-[#0b1c30]/80 backdrop-blur-md rounded-full text-[#ffffff] font-label-sm text-[11px] flex items-center gap-1.5 shadow-md">

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useLedger } from '../context/LedgerContext';
-import { CASH_FLOW_WEEK, INITIAL_RECEIPTS } from '../data/initialData';
+import { INITIAL_RECEIPTS } from '../data/initialData';
 
 export const OverviewScreen: React.FC = () => {
   const {
@@ -14,6 +14,7 @@ export const OverviewScreen: React.FC = () => {
     totalExpenses,
     unreconciledCount,
     transactions,
+    userProfile,
   } = useLedger();
 
   const [activeDay, setActiveDay] = useState<string>('T');
@@ -25,6 +26,54 @@ export const OverviewScreen: React.FC = () => {
   // Recent transactions to display on overview
   const recentTransactions = transactions.slice(0, 4);
 
+  const weeklyData = useMemo(() => {
+    const data = [
+      { day: 'M', xIn: 20, xOut: 31, xText: 29, inflow: 0, outflow: 0 },
+      { day: 'T', xIn: 75, xOut: 86, xText: 84, inflow: 0, outflow: 0 },
+      { day: 'W', xIn: 130, xOut: 141, xText: 139, inflow: 0, outflow: 0 },
+      { day: 'T', xIn: 185, xOut: 196, xText: 194, inflow: 0, outflow: 0 },
+      { day: 'F', xIn: 240, xOut: 251, xText: 249, inflow: 0, outflow: 0 },
+      { day: 'S', xIn: 295, xOut: 306, xText: 304, inflow: 0, outflow: 0 },
+    ];
+
+    const now = new Date();
+    transactions.forEach(tx => {
+       const txDate = new Date(tx.date + 'T12:00:00');
+       const diffTime = Math.abs(now.getTime() - txDate.getTime());
+       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+       if (diffDays <= 7) {
+          const day = txDate.getDay();
+          let index = day - 1;
+          if (day === 0 || day === 6) index = 5;
+          if (index >= 0 && index < 6) {
+             if (tx.type === 'income') {
+                data[index].inflow += tx.amount;
+             } else {
+                data[index].outflow += tx.amount;
+             }
+          }
+       }
+    });
+
+    let maxAmount = 100;
+    data.forEach(d => {
+       if (d.inflow > maxAmount) maxAmount = d.inflow;
+       if (d.outflow > maxAmount) maxAmount = d.outflow;
+    });
+
+    return data.map(d => {
+       const inHeight = Math.max((d.inflow / maxAmount) * 64, 4);
+       const outHeight = Math.max((d.outflow / maxAmount) * 64, 4);
+       return {
+          ...d,
+          inHeight,
+          outHeight,
+          inY: 72 - inHeight,
+          outY: 72 - outHeight
+       };
+    });
+  }, [transactions]);
+
   return (
     <div className="flex flex-col w-full px-4 space-y-4 pb-8">
       {/* Status & Welcome Card */}
@@ -32,28 +81,27 @@ export const OverviewScreen: React.FC = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3 min-w-0">
             <div className="w-10 h-10 rounded-full bg-[#82f5c1]/30 flex items-center justify-center shrink-0">
-              <span
-                className="material-symbols-outlined text-[#006c4a]"
-                style={{ fontVariationSettings: "'FILL' 1" }}
-              >
-                verified_user
-              </span>
+              <img
+                src={userProfile?.profileImageUrl || "https://lh3.googleusercontent.com/aida-public/AB6AXuAhpIvo9EJtWOeVGQbWQMTGndLgaCNEyu33Z38tOxdJmK7NMvSI_6ajwsnj4MXXQ5LSuMRW-TJVCAGzqnh-w7NyJBzmOYRskPcbxjJrUn3xbYmRYlIhUXvNYLxGIoAhp0nlE7HcvT1oUylV-j4mUYu3xU3oQWMxhW8Wm8hmmH87JlPiotssJIT75Q9KOKnd9ABaTdoHcCJRp7vPVAvOILkK-MOAZuE9M50vMpoW-e5Z9J55aGVijCi91Q"}
+                alt="Profile"
+                className="w-10 h-10 rounded-full object-cover shrink-0"
+              />
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-1.5">
                 <span className="font-headline-sm text-[16px] font-bold text-[#0b1c30] truncate">
-                  Good morning, Alex
+                  Good morning, {userProfile?.name?.split(' ')[0] || 'User'}
                 </span>
                 <span className="inline-flex w-2 h-2 rounded-full bg-[#006c4a] animate-pulse" title="System Live" />
               </div>
               <p className="font-body-sm text-[12px] text-[#45464d] truncate">
-                Thursday, Oct 24 • Q4 Tax Window
+                {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })} • Q4 Tax Window
               </p>
             </div>
           </div>
           <div className="flex items-center bg-[#e5eeff] px-2.5 py-1 rounded-full space-x-1 shrink-0">
-            <span className="material-symbols-outlined text-[#006c4a] text-[16px]">cloud_done</span>
-            <span className="font-label-sm text-[11px] text-[#45464d] font-medium">Cloud Synced</span>
+            <span className="material-symbols-outlined text-[#006c4a] text-[16px]">sd_storage</span>
+            <span className="font-label-sm text-[11px] text-[#45464d] font-medium">Local Device</span>
           </div>
         </div>
       </section>
@@ -226,47 +274,19 @@ export const OverviewScreen: React.FC = () => {
             <line stroke="#e5eeff" strokeWidth="1.5" x1="0" x2="320" y1="72" y2="72" />
             <line stroke="#eff4ff" strokeDasharray="3 3" strokeWidth="1" x1="0" x2="320" y1="36" y2="36" />
 
-            {/* Mon */}
-            <rect className="fill-[#006c4a]" height="48" rx="4" width="8" x="20" y="24" />
-            <rect className="fill-[#f83256]" height="20" rx="4" width="8" x="31" y="52" />
-            <text className="fill-[#45464d] text-[10px] font-medium font-sans" textAnchor="middle" x="29" y="86">
-              M
-            </text>
-
-            {/* Tue */}
-            <rect className="fill-[#006c4a]" height="56" rx="4" width="8" x="75" y="16" />
-            <rect className="fill-[#f83256]" height="28" rx="4" width="8" x="86" y="44" />
-            <text className="fill-[#45464d] text-[10px] font-medium font-sans" textAnchor="middle" x="84" y="86">
-              T
-            </text>
-
-            {/* Wed */}
-            <rect className="fill-[#006c4a]" height="40" rx="4" width="8" x="130" y="32" />
-            <rect className="fill-[#f83256]" height="12" rx="4" width="8" x="141" y="60" />
-            <text className="fill-[#45464d] text-[10px] font-medium font-sans" textAnchor="middle" x="139" y="86">
-              W
-            </text>
-
-            {/* Thu (Today - Highlighted) */}
-            <rect className="fill-[#006c4a]" height="64" rx="4" width="8" x="185" y="8" />
-            <rect className="fill-[#f83256]" height="24" rx="4" width="8" x="196" y="48" />
-            <text className="fill-[#0b1c30] text-[10px] font-bold font-sans" textAnchor="middle" x="194" y="86">
-              T
-            </text>
-
-            {/* Fri */}
-            <rect className="fill-[#006c4a] opacity-40" height="44" rx="4" width="8" x="240" y="28" />
-            <rect className="fill-[#f83256] opacity-40" height="16" rx="4" width="8" x="251" y="56" />
-            <text className="fill-[#45464d] text-[10px] font-medium font-sans" textAnchor="middle" x="249" y="86">
-              F
-            </text>
-
-            {/* Sat/Sun combo */}
-            <rect className="fill-[#006c4a] opacity-40" height="30" rx="4" width="8" x="295" y="42" />
-            <rect className="fill-[#f83256] opacity-40" height="8" rx="4" width="8" x="306" y="64" />
-            <text className="fill-[#45464d] text-[10px] font-medium font-sans" textAnchor="middle" x="304" y="86">
-              S
-            </text>
+            {weeklyData.map((d, i) => {
+              const currentDayIndex = new Date().getDay() - 1;
+              const isToday = i === currentDayIndex || (new Date().getDay() === 0 && i === 5) || (new Date().getDay() === 6 && i === 5);
+              return (
+                <React.Fragment key={i}>
+                  <rect className={`fill-[#006c4a] ${d.inflow === 0 ? 'opacity-40' : ''}`} height={d.inHeight} rx="4" width="8" x={d.xIn} y={d.inY} />
+                  <rect className={`fill-[#f83256] ${d.outflow === 0 ? 'opacity-40' : ''}`} height={d.outHeight} rx="4" width="8" x={d.xOut} y={d.outY} />
+                  <text className={`text-[10px] font-sans ${isToday ? 'fill-[#0b1c30] font-bold' : 'fill-[#45464d] font-medium'}`} textAnchor="middle" x={d.xText} y="86">
+                    {d.day}
+                  </text>
+                </React.Fragment>
+              );
+            })}
           </svg>
         </div>
       </section>
@@ -309,7 +329,7 @@ export const OverviewScreen: React.FC = () => {
                         alt="Receipt proof"
                         className="w-10 h-10 rounded-xl object-cover shadow-xs border border-[#e5eeff]"
                         onError={(e) => {
-                          e.currentTarget.src = INITIAL_RECEIPTS.officeDepot.thumbnailUrl;
+                          e.currentTarget.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23ffdad6"/><text x="50" y="55" font-family="sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="%23ba1a1a">Broken</text></svg>';
                         }}
                       />
                       <span className="absolute -bottom-1 -right-1 bg-[#006c4a] text-[#ffffff] rounded-full p-0.5 flex items-center justify-center shadow-xs">
@@ -348,6 +368,9 @@ export const OverviewScreen: React.FC = () => {
                       <p className="font-body-md text-[14px] font-medium text-[#0b1c30] truncate">
                         {tx.counterparty}
                       </p>
+                      <span className="font-body-sm text-[11px] text-[#76777d]">
+                        {new Date(tx.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </span>
                       {tx.tag && (
                         <span
                           className={`font-label-sm text-[10px] px-1.5 py-0.2 rounded-full inline-flex items-center gap-0.5 ${

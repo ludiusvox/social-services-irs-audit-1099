@@ -7,6 +7,7 @@ export const LedgerScreen: React.FC = () => {
     transactions,
     setSelectedReceipt,
     setAttachingTxId,
+    deleteTransaction,
     totalLogs,
     vaultedCount,
     unreconciledCount,
@@ -14,7 +15,19 @@ export const LedgerScreen: React.FC = () => {
   } = useLedger();
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedMonth, setSelectedMonth] = useState('October 2024');
+  const [selectedMonth, setSelectedMonth] = useState(() => {
+    return new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  });
+
+  const recentMonths = useMemo(() => {
+    const months = [];
+    for (let i = 0; i < 3; i++) {
+      const d = new Date();
+      d.setMonth(d.getMonth() - i);
+      months.push(d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }));
+    }
+    return months;
+  }, []);
   const [activeFilter, setActiveFilter] = useState<'all' | 'cash' | 'paypal' | 'has-receipt' | 'missing-receipt'>('all');
   const [activeMenuTxId, setActiveMenuTxId] = useState<string | null>(null);
 
@@ -61,21 +74,26 @@ export const LedgerScreen: React.FC = () => {
     const lastWeekItems = filteredTransactions.filter((t) => t.group === 'Last Week');
     const earlierItems = filteredTransactions.filter((t) => t.group === 'Earlier');
 
+    const formatDate = (date: Date) => date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
     if (todayItems.length > 0) {
       const net = todayItems.reduce((acc, t) => acc + (t.type === 'income' ? t.amount : -t.amount), 0);
-      groups.push({ name: 'Today', dateSubtitle: 'Oct 24, 2024', netTotal: net, items: todayItems });
+      groups.push({ name: 'Today', dateSubtitle: formatDate(today), netTotal: net, items: todayItems });
     }
     if (yesterdayItems.length > 0) {
       const net = yesterdayItems.reduce((acc, t) => acc + (t.type === 'income' ? t.amount : -t.amount), 0);
-      groups.push({ name: 'Yesterday', dateSubtitle: 'Oct 23, 2024', netTotal: net, items: yesterdayItems });
+      groups.push({ name: 'Yesterday', dateSubtitle: formatDate(yesterday), netTotal: net, items: yesterdayItems });
     }
     if (lastWeekItems.length > 0) {
       const net = lastWeekItems.reduce((acc, t) => acc + (t.type === 'income' ? t.amount : -t.amount), 0);
-      groups.push({ name: 'Last Week', dateSubtitle: 'Oct 17 - Oct 20', netTotal: net, items: lastWeekItems });
+      groups.push({ name: 'Last Week', dateSubtitle: 'Past 7 Days', netTotal: net, items: lastWeekItems });
     }
     if (earlierItems.length > 0) {
       const net = earlierItems.reduce((acc, t) => acc + (t.type === 'income' ? t.amount : -t.amount), 0);
-      groups.push({ name: 'Earlier Records', dateSubtitle: 'Q3 - Q4 Historical Vault', netTotal: net, items: earlierItems });
+      groups.push({ name: 'Earlier Records', dateSubtitle: 'Historical Vault', netTotal: net, items: earlierItems });
     }
 
     return groups;
@@ -111,7 +129,7 @@ export const LedgerScreen: React.FC = () => {
 
         {/* Quick Month Selector Pill Bar */}
         <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-          {['October 2024', 'Sep 2024', 'Aug 2024'].map((month) => {
+          {recentMonths.map((month) => {
             const isSelected = selectedMonth === month;
             return (
               <button
@@ -327,6 +345,9 @@ export const LedgerScreen: React.FC = () => {
                               <span className="font-label-lg text-[14px] text-[#0b1c30] font-semibold truncate">
                                 {item.counterparty}
                               </span>
+                              <span className="font-body-sm text-[11px] text-[#76777d]">
+                                {new Date(item.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                              </span>
                               {item.tag && (
                                 <span
                                   className={`px-2 py-0.5 rounded-full font-label-sm text-[10px] font-semibold ${
@@ -387,6 +408,9 @@ export const LedgerScreen: React.FC = () => {
                               src={item.receipt.thumbnailUrl || item.receipt.imageUrl}
                               alt="Receipt proof"
                               className="w-7 h-7 rounded-md object-cover ring-1 ring-[#d3e4fe] group-hover:opacity-90"
+                              onError={(e) => {
+                                e.currentTarget.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23d3e4fe"/><text x="50" y="50" font-family="sans-serif" font-size="20" text-anchor="middle" alignment-baseline="middle" fill="%230b1c30">Receipt</text></svg>';
+                              }}
                             />
                             <div className="flex items-center gap-1 font-label-sm text-[11px] text-[#006c4a] font-semibold">
                               <span className="material-symbols-outlined text-[14px]">verified</span>
@@ -456,7 +480,7 @@ export const LedgerScreen: React.FC = () => {
                       {/* Dropdown menu for more options if opened */}
                       {activeMenuTxId === item.id && (
                         <div className="p-2 bg-[#ffffff] rounded-lg border border-[#e5eeff] shadow-md flex items-center justify-between text-xs animate-in fade-in duration-150">
-                          <span className="text-[#45464d]">ID: {item.id}</span>
+                          <span className="text-[#45464d]">ID: {item.id.slice(0,8)}...</span>
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() => {
@@ -465,17 +489,17 @@ export const LedgerScreen: React.FC = () => {
                               }}
                               className="text-[#006c4a] font-medium hover:underline"
                             >
-                              Re-scan Proof
+                              Re-scan
                             </button>
                             <span className="text-gray-300">|</span>
                             <button
                               onClick={() => {
-                                showToast('Audit trail logged cryptographically', 'verified');
+                                deleteTransaction(item.id);
                                 setActiveMenuTxId(null);
                               }}
-                              className="text-[#0b1c30] font-medium hover:underline"
+                              className="text-[#ba1a1a] font-medium hover:underline"
                             >
-                              Verify Signatures
+                              Delete
                             </button>
                           </div>
                         </div>
