@@ -148,6 +148,17 @@
   }
 }
 
+/* Safe area padding utilities for Pixel 10 status bar & gesture navigation cutouts */
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 36px);
+  padding-top: max(env(safe-area-inset-top), 36px);
+}
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 22px);
+  padding-bottom: max(env(safe-area-inset-bottom), 22px);
+}
+
 /* Hide scrollbar for clean horizontal pill bars */
 .no-scrollbar::-webkit-scrollbar {
   display: none;

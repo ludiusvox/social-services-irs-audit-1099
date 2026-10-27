@@ -19,8 +19,8 @@ export const BottomNav: React.FC = () => {
   const { activeScreen, setActiveScreen, unreconciledCount } = useLedger();
 
   return (
-    <nav className="fixed bottom-0 w-full z-50 pb-safe bg-[#ffffff]/90 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.04)] border-t border-[#e5eeff]/60">
-      <div className="max-w-md mx-auto h-16 px-1 flex items-center justify-around">
+    <nav className="fixed bottom-0 w-full z-50 pb-safe bg-[#ffffff]/95 backdrop-blur-xl shadow-[0_-4px_16px_rgba(0,0,0,0.06)] border-t border-[#e5eeff]/80">
+      <div className="max-w-md mx-auto min-h-[72px] px-2 pt-2.5 pb-3 flex items-center justify-around">
         {NAV_ITEMS.map((item) => {
           const isActive = activeScreen === item.id;
           return (
@@ -30,7 +30,7 @@ export const BottomNav: React.FC = () => {
                 setActiveScreen(item.id);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className={`relative flex flex-col items-center justify-center min-w-[64px] min-h-[44px] py-1 transition-colors select-none ${
+              className={`relative flex flex-col items-center justify-center min-w-[64px] min-h-[48px] py-1 transition-colors select-none ${
                 isActive
                   ? 'text-[#000000] font-semibold'
                   : 'text-[#45464d] hover:text-[#0b1c30]'
@@ -38,7 +38,7 @@ export const BottomNav: React.FC = () => {
             >
               <div className="relative">
                 <span
-                  className="material-symbols-outlined text-[24px]"
+                  className="material-symbols-outlined text-[26px]"
                   style={isActive ? { fontVariationSettings: "'FILL' 1" } : undefined}
                 >
                   {item.icon}
@@ -50,13 +50,13 @@ export const BottomNav: React.FC = () => {
                 )}
               </div>
 
-              <span className="font-label-sm text-[11px] mt-0.5 tracking-tight">
+              <span className="font-label-sm text-[11px] mt-1 tracking-tight">
                 {item.label}
               </span>
 
               {/* Active subtle pill highlight indicator */}
               {isActive && (
-                <span className="absolute bottom-1 w-6 h-0.5 rounded-full bg-[#006c4a]" />
+                <span className="absolute -bottom-1 w-6 h-0.5 rounded-full bg-[#006c4a]" />
               )}
             </button>
           );
