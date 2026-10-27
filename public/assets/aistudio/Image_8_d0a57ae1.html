@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "secondary": "#006c4a", "inverse-primary": "#bec6e0", "on-background": "#0b1c30", "tertiary-container": "#40000c", "surface-dim": "#cbdbf5", "surface": "#f8f9ff", "surface-container-highest": "#d3e4fe", "on-surface": "#0b1c30", "secondary-container": "#82f5c1", "surface-container-lowest": "#ffffff", "background": "#f8f9ff", "on-error": "#ffffff", "surface-variant": "#d3e4fe", "surface-container": "#e5eeff", "on-secondary": "#ffffff", "on-primary-container": "#7c839b", "secondary-fixed-dim": "#68dba9", "on-error-container": "#93000a", "secondary-fixed": "#85f8c4", "on-tertiary": "#ffffff", "on-secondary-fixed": "#002114", "primary-fixed-dim": "#bec6e0", "tertiary-fixed": "#ffdada", "on-primary": "#ffffff", "on-tertiary-container": "#f83256", "error": "#ba1a1a", "error-container": "#ffdad6", "surface-container-low": "#eff4ff", "on-secondary-container": "#00714e", "primary-container": "#131b2e", "surface-bright": "#f8f9ff", "on-tertiary-fixed-variant": "#920028", "inverse-on-surface": "#eaf1ff", "inverse-surface": "#213145", "outline": "#76777d", "primary": "#000000", "tertiary": "#000000", "on-tertiary-fixed": "#40000c", "on-primary-fixed": "#131b2e", "surface-tint": "#565e74", "primary-fixed": "#dae2fd", "on-surface-variant": "#45464d", "surface-container-high": "#dce9ff", "tertiary-fixed-dim": "#ffb3b6", "outline-variant": "#c6c6cd", "on-primary-fixed-variant": "#3f465c", "on-secondary-fixed-variant": "#005137" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "gutter": "1rem", "space-md": "1rem", "margin-tablet": "1.5rem", "space-xs": "0.25rem", "gutter-mobile": "0.75rem", "space-lg": "1.5rem", "margin": "1rem", "gutter-desktop": "1.5rem", "space-sm": "0.5rem", "space-xl": "2rem", "margin-desktop": "2.5rem" }, fontFamily: { "label-sm": ["Inter"], "body-lg": ["Inter"], "body-sm": ["Inter"], "label-lg": ["Inter"], "headline-lg": ["Manrope"], "headline-md": ["Manrope"], "headline-sm": ["Manrope"], "headline-xl-mobile": ["Manrope"], "headline-lg-mobile": ["Manrope"], "label-md": ["Inter"], "headline-xl": ["Manrope"], "body-md": ["Inter"] }, fontSize: { "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "600" }], "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "400" }], "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "400" }], "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }], "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "headline-sm": ["16px", { "lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "600" }], "headline-xl-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.025em", "fontWeight": "700" }], "headline-lg-mobile": ["22px", { "lineHeight": "30px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }], "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.03em", "fontWeight": "700" }], "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400" }] } } } };</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface text-on-surface font-body-md text-body-md flex flex-col min-h-screen antialiased"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-gutter flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="LedgerLens Brand Icon" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VYXAojS6AQ8fjTo7qBnsIU2_vAbzsZrfHmD930Vwv59tXS1Uh0ch_Nw1zTZqF6hrwbObM69bbQ1QBSdipR1lo7vcDM2nnemsEkzaJ_IhBL1Ghj2yhriMkEfhI8UJtyJiMT_iF-SRy9Jp5zDHWi97Iqp2aqR3SOq_miFBYhmGdF42mRYKjvBM7z0l7CTLXdCh-1VM0RGLaomzjToMYRrztaQYwab927KD8TTCFhpkv3G1UZ7Ze2GCjjXH2J"/><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-on-surface leading-tight tracking-tight">LedgerLens</span><span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Tax &amp; Analytics</span></div></div><div class="flex items-center gap-space-xs"><button aria-label="Notifications" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[22px]">notifications</span></button><a class="w-11 h-11 flex items-center justify-center" data-path="settings-and-profile" href="#"><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-surface-container" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhpIvo9EJtWOeVGQbWQMTGndLgaCNEyu33Z38tOxdJmK7NMvSI_6ajwsnj4MXXQ5LSuMRW-TJVCAGzqnh-w7NyJBzmOYRskPcbxjJrUn3xbYmRYlIhUXvNYLxGIoAhp0nlE7HcvT1oUylV-j4mUYu3xU3oQWMxhW8Wm8hmmH87JlPiotssJIT75Q9KOKnd9ABaTdoHcCJRp7vPVAvOILkK-MOAZuE9M50vMpoW-e5Z9J55aGVijCi91Q"/></a></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-20 bg-surface"><div class="flex flex-col w-full px-gutter space-y-space-md pb-12">
+<!-- Tax Period Selector & Deadline Alert -->
+<div class="flex flex-col space-y-space-sm pt-space-sm">
+<div class="flex items-center justify-between">
+<div class="relative inline-block">
+<button class="flex items-center space-x-space-xs bg-surface-container-lowest px-space-md py-space-xs rounded-full shadow-sm text-on-surface hover:bg-surface-container-low transition-colors" id="taxPeriodBtn">
+<span class="material-symbols-outlined text-[18px] text-secondary">calendar_month</span>
+<span class="font-headline-sm text-headline-sm font-semibold">Tax Year 2024 (Q1–Q4)</span>
+<span class="material-symbols-outlined text-[18px] text-outline">expand_more</span>
+</button>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container-high px-space-sm py-0.5 rounded-full">Final Filing</span>
+</div>
+<!-- Friendly Deadline Banner -->
+<div class="flex items-start gap-space-sm p-space-md rounded-xl bg-secondary-container/30 text-on-surface shadow-sm">
+<div class="w-9 h-9 rounded-full bg-secondary-container flex items-center justify-center shrink-0 text-on-secondary-container">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg font-semibold text-secondary">Q4 Estimated Tax Due Jan 15</span>
+<span class="font-label-sm text-label-sm text-secondary font-bold uppercase tracking-wider">On Track</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+          You have fully reconciled your fourth quarter accounts. Estimated payment safe harbor threshold achieved!
+        </p>
+</div>
+</div>
+</div>
+<!-- Tax Snapshot Bento -->
+<div class="grid grid-cols-2 gap-space-sm">
+<!-- Gross Income Card (Full width top) -->
+<div class="col-span-2 p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface-variant">Gross Operating Income</span>
+<span class="material-symbols-outlined text-[20px] text-secondary">trending_up</span>
+</div>
+<div class="mt-space-xs">
+<span class="font-headline-xl-mobile text-headline-xl-mobile font-bold tracking-tight text-on-surface">$22,130.50</span>
+</div>
+<div class="flex items-center gap-space-sm mt-space-sm pt-space-xs">
+<div class="flex items-center gap-1.5 bg-surface-container px-space-sm py-0.5 rounded-full">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-label-sm text-label-sm text-on-surface">Cash: $6,240.00</span>
+</div>
+<div class="flex items-center gap-1.5 bg-surface-container px-space-sm py-0.5 rounded-full">
+<span class="w-2 h-2 rounded-full bg-surface-tint"></span>
+<span class="font-label-sm text-label-sm text-on-surface">PayPal: $15,890.50</span>
+</div>
+</div>
+</div>
+<!-- Deductible Expenses -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Deductible Expenses</span>
+<span class="material-symbols-outlined text-[18px] text-error">receipt</span>
+</div>
+<div class="mt-space-sm">
+<span class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-on-surface">$3,710.00</span>
+<p class="font-body-sm text-body-sm text-secondary font-medium mt-0.5">33 Line items</p>
+</div>
+</div>
+<!-- Net Taxable Profit -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Net Taxable Profit</span>
+<span class="material-symbols-outlined text-[18px] text-secondary">account_balance</span>
+</div>
+<div class="mt-space-sm">
+<span class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-on-surface">$18,420.50</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Sched C Net Line 31</p>
+</div>
+</div>
+<!-- Recommended Tax Reserve (Accentuated card) -->
+<div class="col-span-2 p-space-md rounded-xl bg-primary-container text-surface shadow-sm flex items-center justify-between">
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="font-label-sm text-label-sm text-surface-variant uppercase tracking-wider">Recommended Tax Reserve (25%)</span>
+<span class="material-symbols-outlined text-[15px] text-secondary-fixed">info</span>
+</div>
+<span class="font-headline-lg text-headline-lg font-bold text-surface-container-lowest mt-0.5">$4,605.00</span>
+<span class="font-body-sm text-body-sm text-surface-variant">Self-Employment (15.3%) + Fed/State Est.</span>
+</div>
+<button class="bg-secondary text-surface-container-lowest px-space-md py-space-sm rounded-lg font-label-md text-label-md font-semibold active:scale-95 transition-transform flex items-center gap-1 shadow-sm" onclick="simulateReserveTransfer()">
+<span>Allocate</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Audit Readiness Card -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex flex-col space-y-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-full bg-secondary-container/50 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">shield</span>
+</div>
+<div>
+<span class="font-headline-sm text-headline-sm font-semibold text-on-surface">Audit Readiness</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">32 of 33 expenses have verified photo proof</p>
+</div>
+</div>
+<div class="text-right">
+<span class="font-headline-md text-headline-md font-bold text-secondary">98%</span>
+<span class="block font-label-sm text-label-sm text-on-surface-variant">Ready</span>
+</div>
+</div>
+<!-- Visual Progress Meter -->
+<div class="w-full bg-surface-container-high h-2.5 rounded-full overflow-hidden flex">
+<div class="bg-secondary h-full rounded-full transition-all duration-700" style="width: 98%;"></div>
+</div>
+<div class="flex items-center justify-between pt-1">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-secondary">check_circle</span>
+<span class="font-body-sm text-body-sm">Audit trail cryptographically logged</span>
+</div>
+<button class="font-label-sm text-label-sm text-secondary font-semibold hover:underline">1 Unattached</button>
+</div>
+</div>
+<!-- Expense & Deductions Breakdown -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex flex-col space-y-space-md">
+<div class="flex items-center justify-between">
+<div>
+<h2 class="font-headline-sm text-headline-sm font-bold text-on-surface">Deductions Breakdown</h2>
+<p class="font-body-sm text-body-sm text-secondary flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[14px]">done_all</span>
+          100% categorized for IRS Schedule C
+        </p>
+</div>
+<span class="material-symbols-outlined text-[20px] text-outline">pie_chart</span>
+</div>
+<!-- Segmented Proportional Visual Bar -->
+<div class="w-full h-3 rounded-full flex overflow-hidden shadow-inner gap-0.5">
+<div class="h-full bg-on-background rounded-l-full" style="width: 35%;" title="Equipment 35%"></div>
+<div class="h-full bg-secondary" style="width: 25%;" title="Travel &amp; Mileage 25%"></div>
+<div class="h-full bg-surface-tint" style="width: 20%;" title="Software 20%"></div>
+<div class="h-full bg-secondary-fixed-dim" style="width: 12%;" title="Office Supplies 12%"></div>
+<div class="h-full bg-surface-container-highest rounded-r-full" style="width: 8%;" title="Meals 8%"></div>
+</div>
+<!-- Category Line Items list -->
+<div class="space-y-space-xs">
+<div class="flex items-center justify-between p-space-xs rounded-lg hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-space-sm min-w-0">
+<span class="w-3 h-3 rounded-full bg-on-background shrink-0"></span>
+<span class="font-body-md text-body-md text-on-surface truncate">Equipment &amp; Tech (Line 27a)</span>
+</div>
+<div class="text-right shrink-0">
+<span class="font-label-lg text-label-lg font-semibold text-on-surface">$1,298.50</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant ml-1.5">35%</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-space-xs rounded-lg hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-space-sm min-w-0">
+<span class="w-3 h-3 rounded-full bg-secondary shrink-0"></span>
+<span class="font-body-md text-body-md text-on-surface truncate">Travel &amp; Car Mileage (Line 9)</span>
+</div>
+<div class="text-right shrink-0">
+<span class="font-label-lg text-label-lg font-semibold text-on-surface">$927.50</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant ml-1.5">25%</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-space-xs rounded-lg hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-space-sm min-w-0">
+<span class="w-3 h-3 rounded-full bg-surface-tint shrink-0"></span>
+<span class="font-body-md text-body-md text-on-surface truncate">Software &amp; Subscriptions (Line 18)</span>
+</div>
+<div class="text-right shrink-0">
+<span class="font-label-lg text-label-lg font-semibold text-on-surface">$742.00</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant ml-1.5">20%</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-space-xs rounded-lg hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-space-sm min-w-0">
+<span class="w-3 h-3 rounded-full bg-secondary-fixed-dim shrink-0"></span>
+<span class="font-body-md text-body-md text-on-surface truncate">Office Supplies (Line 22)</span>
+</div>
+<div class="text-right shrink-0">
+<span class="font-label-lg text-label-lg font-semibold text-on-surface">$445.20</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant ml-1.5">12%</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-space-xs rounded-lg hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-space-sm min-w-0">
+<span class="w-3 h-3 rounded-full bg-surface-container-highest shrink-0"></span>
+<span class="font-body-md text-body-md text-on-surface truncate">Business Meals 50% (Line 24b)</span>
+</div>
+<div class="text-right shrink-0">
+<span class="font-label-lg text-label-lg font-semibold text-on-surface">$296.80</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant ml-1.5">8%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- One-Tap Export & Reporting Suite -->
+<div class="flex flex-col space-y-space-sm">
+<div class="flex items-center justify-between px-space-xs">
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface">Export &amp; Reporting Suite</h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Tax Season Ready</span>
+</div>
+<!-- Primary Action: Full Bundle -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex flex-col space-y-space-sm">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-11 h-11 rounded-lg bg-on-background text-surface flex items-center justify-center">
+<span class="material-symbols-outlined text-[24px]">folder_zip</span>
+</div>
+<div>
+<h4 class="font-headline-sm text-headline-sm font-bold text-on-surface">Complete Tax Bundle (.ZIP)</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">32 high-res receipt scans + Schedule C Ledger CSV</p>
+</div>
+</div>
+<span class="font-label-sm text-label-sm bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full font-semibold">CPA Pick</span>
+</div>
+<button class="w-full py-2.5 px-space-md rounded-lg bg-on-background text-surface hover:opacity-90 active:scale-[0.99] transition-all flex items-center justify-center gap-2 font-label-lg text-label-lg font-semibold shadow-sm" id="btnZip" onclick="triggerDownload('bundle', this)">
+<span class="material-symbols-outlined text-[18px]">download</span>
+<span>Download Complete Archive (18.4 MB)</span>
+</button>
+</div>
+<!-- Secondary Exports Grid -->
+<div class="grid grid-cols-1 gap-space-sm">
+<!-- PDF Schedule C -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 rounded-lg bg-error-container text-error flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[22px]">picture_as_pdf</span>
+</div>
+<div class="min-w-0">
+<span class="font-headline-sm text-headline-sm font-semibold text-on-surface block truncate">IRS Schedule C Summary</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant block">PDF with official line allocations</span>
+</div>
+</div>
+<button class="shrink-0 p-2.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface active:scale-95 transition-all" onclick="triggerDownload('pdf', this)">
+<span class="material-symbols-outlined text-[20px]">file_download</span>
+</button>
+</div>
+<!-- CSV / Spreadsheet -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 rounded-lg bg-secondary-container text-secondary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[22px]">table_view</span>
+</div>
+<div class="min-w-0">
+<span class="font-headline-sm text-headline-sm font-semibold text-on-surface block truncate">Export CSV / Excel</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant block">TurboTax &amp; QuickBooks mapping</span>
+</div>
+</div>
+<button class="shrink-0 p-2.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface active:scale-95 transition-all" onclick="triggerDownload('csv', this)">
+<span class="material-symbols-outlined text-[20px]">file_download</span>
+</button>
+</div>
+<!-- Share with Accountant Button -->
+<button class="w-full p-space-md rounded-xl bg-surface-container-low hover:bg-surface-container flex items-center justify-between text-on-surface active:scale-[0.99] transition-all" onclick="openShareModal()">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest text-on-surface flex items-center justify-center">
+<span class="material-symbols-outlined text-[22px]">forward_to_inbox</span>
+</div>
+<div class="text-left">
+<span class="font-headline-sm text-headline-sm font-semibold block">Send directly to CPA</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant block">Secure password-protected handoff link</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-[20px] text-outline">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Interactive Modal / Overlay Simulation for Export Hand-off -->
+<div class="hidden fixed inset-0 z-50 flex items-end justify-center bg-on-background/40 backdrop-blur-sm p-gutter pb-safe" id="shareModal">
+<div class="w-full max-w-lg bg-surface-container-lowest rounded-2xl shadow-xl p-space-lg flex flex-col space-y-space-md transform transition-transform">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-[24px]">verified_user</span>
+<h3 class="font-headline-sm text-headline-sm font-bold text-on-surface">Secure CPA Handoff</h3>
+</div>
+<button class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant" onclick="closeShareModal()">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+        LedgerLens will compile a clean audited ledger package and deliver an encrypted 7-day download link to your tax preparer.
+      </p>
+<div class="space-y-space-xs">
+<label class="font-label-sm text-label-sm text-on-surface font-semibold">Accountant or CPA Email</label>
+<div class="flex items-center bg-surface-container-low rounded-lg px-space-md py-2.5">
+<span class="material-symbols-outlined text-outline text-[18px] mr-2">mail</span>
+<input class="bg-transparent text-on-surface font-body-md text-body-md w-full outline-none" id="cpaEmail" placeholder="cpa@firm.com" type="email" value="marcus.cpa@taxpartners.com"/>
+</div>
+</div>
+<div class="flex items-center justify-between py-space-xs bg-surface-container-low px-space-md rounded-lg">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px]">lock</span>
+<span class="font-label-sm text-label-sm text-on-surface font-medium">Require PIN to unpack receipts</span>
+</div>
+<span class="font-label-sm text-label-sm font-mono font-bold text-on-surface">4920</span>
+</div>
+<div class="flex gap-space-sm pt-2">
+<button class="flex-1 py-2.5 rounded-lg bg-surface-container font-label-md text-label-md text-on-surface hover:bg-surface-container-high transition-colors" onclick="closeShareModal()">
+          Cancel
+        </button>
+<button class="flex-1 py-2.5 rounded-lg bg-on-background text-surface font-label-md text-label-md font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-1.5" onclick="dispatchHandoff()">
+<span class="material-symbols-outlined text-[16px]">send</span>
+<span>Send Package</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Micro Toast Notification for interactions -->
+<div class="fixed top-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none transition-all duration-300 opacity-0 transform -translate-y-4" id="toastNotification">
+<div class="bg-on-background text-surface px-space-md py-2 rounded-full shadow-lg flex items-center space-x-2">
+<span class="material-symbols-outlined text-secondary-container text-[18px]" id="toastIcon">check_circle</span>
+<span class="font-label-sm text-label-sm font-medium" id="toastText">File exported successfully</span>
+</div>
+</div>
+</div>
+<script>
+  function showToast(message, icon = 'check_circle') {
+    const toast = document.getElementById('toastNotification');
+    const toastText = document.getElementById('toastText');
+    const toastIcon = document.getElementById('toastIcon');
+    if (!toast) return;
+
+    toastText.textContent = message;
+    toastIcon.textContent = icon;
+    toast.classList.remove('opacity-0', '-translate-y-4');
+    toast.classList.add('opacity-100', 'translate-y-0');
+
+    setTimeout(() => {
+      toast.classList.remove('opacity-100', 'translate-y-0');
+      toast.classList.add('opacity-0', '-translate-y-4');
+    }, 2800);
+  }
+
+  function triggerDownload(type, buttonEl) {
+    const originalContent = buttonEl.innerHTML;
+    buttonEl.disabled = true;
+    buttonEl.innerHTML = `
+      <span class="material-symbols-outlined text-[18px] animate-spin">progress_activity</span>
+      <span>Generating...</span>
+    `;
+
+    setTimeout(() => {
+      buttonEl.innerHTML = originalContent;
+      buttonEl.disabled = false;
+      if (type === 'bundle') {
+        showToast('Complete Tax Bundle ZIP downloaded (18.4 MB)', 'archive');
+      } else if (type === 'pdf') {
+        showToast('Schedule C PDF statement exported', 'picture_as_pdf');
+      } else {
+        showToast('Ledger CSV formatted for TurboTax ready', 'table_chart');
+      }
+    }, 900);
+  }
+
+  function simulateReserveTransfer() {
+    showToast('Allocated $4,605 to Tax Vault sub-account', 'savings');
+  }
+
+  function openShareModal() {
+    const modal = document.getElementById('shareModal');
+    if (modal) modal.classList.remove('hidden');
+  }
+
+  function closeShareModal() {
+    const modal = document.getElementById('shareModal');
+    if (modal) modal.classList.add('hidden');
+  }
+
+  function dispatchHandoff() {
+    const email = document.getElementById('cpaEmail').value || 'Accountant';
+    closeShareModal();
+    showToast(`Encrypted bundle sent to ${email}`, 'mark_email_read');
+  }
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.04)]" data-active-classes="text-primary font-semibold"><div class="h-16 px-space-xs flex items-center justify-around"><a class="flex flex-col items-center justify-center min-w-[64px] min-h-[44px] py-1 text-on-surface-variant hover:text-on-surface transition-colors" data-path="overview" href="#"><span class="material-symbols-outlined text-[24px]">dashboard</span><span class="font-label-sm text-label-sm mt-0.5">Overview</span></a><a class="flex flex-col items-center justify-center min-w-[64px] min-h-[44px] py-1 text-on-surface-variant hover:text-on-surface transition-colors" data-path="log-transaction" href="#"><span class="material-symbols-outlined text-[24px]">add_circle</span><span class="font-label-sm text-label-sm mt-0.5">Log</span></a><a class="flex flex-col items-center justify-center min-w-[64px] min-h-[44px] py-1 text-on-surface-variant hover:text-on-surface transition-colors" data-path="ledger" href="#"><span class="material-symbols-outlined text-[24px]">receipt_long</span><span class="font-label-sm text-label-sm mt-0.5">Ledger</span></a><a class="flex flex-col items-center justify-center min-w-[64px] min-h-[44px] py-1 text-on-surface-variant hover:text-on-surface transition-colors" data-path="tax-and-analytics" href="#"><span class="material-symbols-outlined text-[24px]">query_stats</span><span class="font-label-sm text-label-sm mt-0.5">Tax &amp; Analytics</span></a></div></nav></body></html>

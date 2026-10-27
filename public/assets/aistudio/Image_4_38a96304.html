@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "secondary": "#006c4a", "inverse-primary": "#bec6e0", "on-background": "#0b1c30", "tertiary-container": "#40000c", "surface-dim": "#cbdbf5", "surface": "#f8f9ff", "surface-container-highest": "#d3e4fe", "on-surface": "#0b1c30", "secondary-container": "#82f5c1", "surface-container-lowest": "#ffffff", "background": "#f8f9ff", "on-error": "#ffffff", "surface-variant": "#d3e4fe", "surface-container": "#e5eeff", "on-secondary": "#ffffff", "on-primary-container": "#7c839b", "secondary-fixed-dim": "#68dba9", "on-error-container": "#93000a", "secondary-fixed": "#85f8c4", "on-tertiary": "#ffffff", "on-secondary-fixed": "#002114", "primary-fixed-dim": "#bec6e0", "tertiary-fixed": "#ffdada", "on-primary": "#ffffff", "on-tertiary-container": "#f83256", "error": "#ba1a1a", "error-container": "#ffdad6", "surface-container-low": "#eff4ff", "on-secondary-container": "#00714e", "primary-container": "#131b2e", "surface-bright": "#f8f9ff", "on-tertiary-fixed-variant": "#920028", "inverse-on-surface": "#eaf1ff", "inverse-surface": "#213145", "outline": "#76777d", "primary": "#000000", "tertiary": "#000000", "on-tertiary-fixed": "#40000c", "on-primary-fixed": "#131b2e", "surface-tint": "#565e74", "primary-fixed": "#dae2fd", "on-surface-variant": "#45464d", "surface-container-high": "#dce9ff", "tertiary-fixed-dim": "#ffb3b6", "outline-variant": "#c6c6cd", "on-primary-fixed-variant": "#3f465c", "on-secondary-fixed-variant": "#005137" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "gutter": "1rem", "space-md": "1rem", "margin-tablet": "1.5rem", "space-xs": "0.25rem", "gutter-mobile": "0.75rem", "space-lg": "1.5rem", "margin": "1rem", "gutter-desktop": "1.5rem", "space-sm": "0.5rem", "space-xl": "2rem", "margin-desktop": "2.5rem" }, fontFamily: { "label-sm": ["Inter"], "body-lg": ["Inter"], "body-sm": ["Inter"], "label-lg": ["Inter"], "headline-lg": ["Manrope"], "headline-md": ["Manrope"], "headline-sm": ["Manrope"], "headline-xl-mobile": ["Manrope"], "headline-lg-mobile": ["Manrope"], "label-md": ["Inter"], "headline-xl": ["Manrope"], "body-md": ["Inter"] }, fontSize: { "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "600" }], "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "400" }], "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "400" }], "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }], "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "headline-md": ["20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "headline-sm": ["16px", { "lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "600" }], "headline-xl-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.025em", "fontWeight": "700" }], "headline-lg-mobile": ["22px", { "lineHeight": "30px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500" }], "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.03em", "fontWeight": "700" }], "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0em", "fontWeight": "400" }] } } } };</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface text-on-surface font-body-md text-body-md flex flex-col min-h-screen antialiased"><header class="fixed top-0 w-full z-50 pt-safe bg-surface-container-lowest/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-gutter flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="LedgerLens Brand Icon" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VYXAojS6AQ8fjTo7qBnsIU2_vAbzsZrfHmD930Vwv59tXS1Uh0ch_Nw1zTZqF6hrwbObM69bbQ1QBSdipR1lo7vcDM2nnemsEkzaJ_IhBL1Ghj2yhriMkEfhI8UJtyJiMT_iF-SRy9Jp5zDHWi97Iqp2aqR3SOq_miFBYhmGdF42mRYKjvBM7z0l7CTLXdCh-1VM0RGLaomzjToMYRrztaQYwab927KD8TTCFhpkv3G1UZ7Ze2GCjjXH2J"/><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-on-surface leading-tight tracking-tight">LedgerLens</span><span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Ledger</span></div></div><div class="flex items-center gap-space-xs"><button aria-label="Notifications" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[22px]">notifications</span></button><a class="w-11 h-11 flex items-center justify-center" data-path="settings-and-profile" href="#"><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-surface-container" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhpIvo9EJtWOeVGQbWQMTGndLgaCNEyu33Z38tOxdJmK7NMvSI_6ajwsnj4MXXQ5LSuMRW-TJVCAGzqnh-w7NyJBzmOYRskPcbxjJrUn3xbYmRYlIhUXvNYLxGIoAhp0nlE7HcvT1oUylV-j4mUYu3xU3oQWMxhW8Wm8hmmH87JlPiotssJIT75Q9KOKnd9ABaTdoHcCJRp7vPVAvOILkK-MOAZuE9M50vMpoW-e5Z9J55aGVijCi91Q"/></a></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-20 bg-surface"><div class="flex flex-col w-full pb-24">
+<!-- Top Search & Micro Header Area -->
+<div class="px-gutter pt-3 pb-2 flex flex-col gap-space-sm">
+<div class="relative w-full">
+<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<input class="w-full pl-10 pr-10 py-2.5 bg-surface-container-lowest rounded-xl font-body-md text-body-md text-on-surface shadow-sm focus:outline-none placeholder:text-outline transition-all" id="ledger-search-input" placeholder="Search merchant, tag, amount..." type="text"/>
+<button aria-label="Clear Search" class="hidden absolute inset-y-0 right-0 pr-3 flex items-center text-outline hover:text-on-surface" id="clear-search-btn">
+<span class="material-symbols-outlined text-[18px]">cancel</span>
+</button>
+</div>
+<!-- Quick Month Selector Pill Bar -->
+<div class="flex items-center gap-space-xs overflow-x-auto no-scrollbar py-1">
+<button class="month-pill px-3.5 py-1.5 rounded-full font-label-sm text-label-sm bg-primary-container text-on-primary shadow-sm transition-all whitespace-nowrap active:scale-95" data-month="oct">
+        October 2024
+      </button>
+<button class="month-pill px-3.5 py-1.5 rounded-full font-label-sm text-label-sm bg-surface-container-lowest text-on-surface-variant shadow-sm transition-all whitespace-nowrap active:scale-95 hover:bg-surface-container" data-month="sep">
+        Sep 2024
+      </button>
+<button class="month-pill px-3.5 py-1.5 rounded-full font-label-sm text-label-sm bg-surface-container-lowest text-on-surface-variant shadow-sm transition-all whitespace-nowrap active:scale-95 hover:bg-surface-container" data-month="aug">
+        Aug 2024
+      </button>
+<button class="month-pill px-3 py-1.5 rounded-full font-label-sm text-label-sm bg-surface-container-lowest text-on-surface-variant shadow-sm transition-all flex items-center gap-1 whitespace-nowrap">
+<span class="material-symbols-outlined text-[16px]">calendar_month</span>
+        Custom
+      </button>
+</div>
+<!-- Filter Category Pills -->
+<div class="flex items-center gap-space-xs overflow-x-auto no-scrollbar pb-0.5">
+<button class="filter-pill active-pill px-3 py-1 rounded-full font-label-sm text-label-sm bg-on-background text-surface-container-lowest shadow-sm transition-all whitespace-nowrap" data-filter="all">
+        All
+      </button>
+<button class="filter-pill px-3 py-1 rounded-full font-label-sm text-label-sm bg-surface-container-lowest text-on-surface shadow-sm transition-all whitespace-nowrap flex items-center gap-1.5" data-filter="cash">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+        Cash Only
+      </button>
+<button class="filter-pill px-3 py-1 rounded-full font-label-sm text-label-sm bg-surface-container-lowest text-on-surface shadow-sm transition-all whitespace-nowrap flex items-center gap-1.5" data-filter="paypal">
+<span class="w-1.5 h-1.5 rounded-full bg-surface-tint"></span>
+        PayPal
+      </button>
+<button class="filter-pill px-3 py-1 rounded-full font-label-sm text-label-sm bg-surface-container-lowest text-on-surface shadow-sm transition-all whitespace-nowrap flex items-center gap-1" data-filter="has-receipt">
+<span class="material-symbols-outlined text-[15px] text-secondary">receipt_long</span>
+        With Receipt
+      </button>
+<button class="filter-pill px-3 py-1 rounded-full font-label-sm text-label-sm bg-surface-container-lowest text-on-surface shadow-sm transition-all whitespace-nowrap flex items-center gap-1 text-on-tertiary-container" data-filter="missing-receipt">
+<span class="material-symbols-outlined text-[15px] text-error">warning</span>
+        Missing Receipt (2)
+      </button>
+</div>
+</div>
+<!-- Monthly Metric Summary Ribbon -->
+<div class="px-gutter my-1">
+<div class="w-full bg-surface-container-lowest rounded-xl p-3.5 shadow-sm flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Total Logs</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-headline-md text-headline-md text-on-surface">34</span>
+<span class="font-label-sm text-label-sm text-secondary flex items-center">
+<span class="material-symbols-outlined text-[14px]">trending_up</span>+4
+          </span>
+</div>
+</div>
+<div class="w-[1px] h-8 bg-surface-container-highest"></div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Vaulted</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-headline-md text-headline-md text-on-surface">32</span>
+<span class="font-label-sm text-label-sm text-secondary bg-secondary-container/30 px-1 rounded font-medium">94%</span>
+</div>
+</div>
+<div class="w-[1px] h-8 bg-surface-container-highest"></div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Unreconciled</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-headline-md text-headline-md text-error">2</span>
+<span class="w-2 h-2 rounded-full bg-error animate-pulse"></span>
+</div>
+</div>
+</div>
+</div>
+<!-- Ledger Transaction Groups -->
+<div class="flex flex-col gap-space-md px-gutter mt-2" id="ledger-stream">
+<!-- GROUP: TODAY -->
+<div class="transaction-group flex flex-col gap-space-xs">
+<div class="flex items-center justify-between py-1 px-1">
+<div class="flex items-center gap-1.5">
+<span class="font-headline-sm text-headline-sm text-on-surface">Today</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Oct 24, 2024</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">-$63.40 Net</span>
+</div>
+<!-- Item 1: Uber Receipt Missing -->
+<div class="transaction-item relative bg-surface-container-lowest rounded-xl p-3 shadow-sm flex flex-col gap-2 transition-transform" data-tags="missing-receipt card">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3 min-w-0">
+<!-- Method Icon Badge -->
+<div class="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center shrink-0 text-on-surface">
+<span class="material-symbols-outlined text-[20px]">credit_card</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-2">
+<span class="font-label-lg text-label-lg text-on-surface truncate">Uber Technologies</span>
+<span class="px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-error-container text-on-error-container">Audit Alert</span>
+</div>
+<div class="flex items-center gap-2 mt-0.5">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Ride · Travel</span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">·</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">14:22</span>
+</div>
+</div>
+</div>
+<!-- Debit Amount -->
+<div class="flex flex-col items-end shrink-0 pl-2">
+<span class="font-headline-sm text-headline-sm text-on-surface">-$38.40</span>
+<span class="font-label-sm text-label-sm text-outline">Card • 8812</span>
+</div>
+</div>
+<!-- Action / Receipt Status Strip -->
+<div class="flex items-center justify-between pt-1.5 bg-surface-container-low/60 -mx-3 -mb-3 p-2.5 rounded-b-xl">
+<div class="flex items-center gap-1.5 text-error">
+<span class="material-symbols-outlined text-[16px]">no_photography</span>
+<span class="font-label-sm text-label-sm font-semibold">Missing Proof</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="snap-now-btn px-2.5 py-1 bg-surface-container-highest hover:bg-surface-variant text-on-surface rounded-lg font-label-sm text-label-sm flex items-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-[14px]">photo_camera</span>
+              Attach
+            </button>
+<button aria-label="Tag Tax" class="w-7 h-7 flex items-center justify-center rounded-lg bg-surface-container-lowest text-on-surface-variant hover:text-on-surface">
+<span class="material-symbols-outlined text-[16px]">local_offer</span>
+</button>
+<button aria-label="Edit" class="w-7 h-7 flex items-center justify-center rounded-lg bg-surface-container-lowest text-on-surface-variant hover:text-on-surface">
+<span class="material-symbols-outlined text-[16px]">more_vert</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Item 2: Client Retainer (Income, PayPal) -->
+<div class="transaction-item relative bg-surface-container-lowest rounded-xl p-3 shadow-sm flex flex-col gap-2 transition-transform" data-tags="paypal has-receipt">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3 min-w-0">
+<!-- PayPal Soft Blue Badge -->
+<div class="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center shrink-0 text-on-background">
+<span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-2">
+<span class="font-label-lg text-label-lg text-on-surface truncate">Vanguard Studios LLC</span>
+<span class="px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-secondary-container text-on-secondary-container">Invoice #104</span>
+</div>
+<div class="flex items-center gap-2 mt-0.5">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Design Services</span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">·</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">10:45</span>
+</div>
+</div>
+</div>
+<!-- Credit Amount -->
+<div class="flex flex-col items-end shrink-0 pl-2">
+<span class="font-headline-sm text-headline-sm text-secondary font-bold">+$1,450.00</span>
+<span class="font-label-sm text-label-sm text-secondary">PayPal</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1.5 bg-surface-container-low/60 -mx-3 -mb-3 p-2.5 rounded-b-xl">
+<!-- Thumbnail Trigger View -->
+<button class="preview-receipt-btn flex items-center gap-2 group text-left" data-amt="+$1,450.00" data-date="Today, 10:45" data-merchant="Vanguard Studios LLC" data-title="Vanguard Studios Invoice #104">
+<img class="w-7 h-7 rounded-md object-cover ring-1 ring-surface-variant group-hover:opacity-90" data-alt="Digital clean business contract document screenshot with modern invoice header, invoice number 104 and payment confirmation seal in deep navy tone on clean white page" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfynCyHb-y8oL1rzZ3jMS1tMyUAx978PlZ07p6YxTtdZhYvfhAPVlZO7SUvHE9LP-tDnfb7YVNnz0D_iJVDXBm5gJnOfqUa74-_p23lr4Ep92fskYcocOanM26RN7c1mfdKsj_MxTl8taIk67FtbO62ZhX-zs7-oam3gWPaLKjc5M66Kx55k2iPnIavuPhcZ1o5j7DbWisUiBq2R11ajujRvlCJMX_D--2_WV_nxayJPEU5KPd_ql5dg"/>
+<div class="flex items-center gap-1 font-label-sm text-label-sm text-secondary font-medium">
+<span class="material-symbols-outlined text-[14px]">verified</span>
+<span>Vaulted PDF</span>
+</div>
+</button>
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded-md bg-surface-container text-on-surface font-label-sm text-label-sm">Tax Exempt</span>
+<button aria-label="Edit Entry" class="w-7 h-7 flex items-center justify-center rounded-lg bg-surface-container-lowest text-on-surface-variant hover:text-on-surface">
+<span class="material-symbols-outlined text-[16px]">edit</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Item 3: Coffee Meeting (Cash) -->
+<div class="transaction-item relative bg-surface-container-lowest rounded-xl p-3 shadow-sm flex flex-col gap-2 transition-transform" data-tags="cash has-receipt">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3 min-w-0">
+<!-- Cash Green Soft Badge -->
+<div class="w-10 h-10 rounded-xl bg-secondary-container/40 flex items-center justify-center shrink-0 text-secondary">
+<span class="material-symbols-outlined text-[20px]">payments</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-2">
+<span class="font-label-lg text-label-lg text-on-surface truncate">Blue Bottle Cafe</span>
+<span class="px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-surface-container-highest text-on-surface">Client Mtg</span>
+</div>
+<div class="flex items-center gap-2 mt-0.5">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Meals &amp; Ent.</span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">·</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">08:15</span>
+</div>
+</div>
+</div>
+<!-- Debit Amount -->
+<div class="flex flex-col items-end shrink-0 pl-2">
+<span class="font-headline-sm text-headline-sm text-on-surface">-$25.00</span>
+<span class="font-label-sm text-label-sm text-secondary">Cash Out</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1.5 bg-surface-container-low/60 -mx-3 -mb-3 p-2.5 rounded-b-xl">
+<button class="preview-receipt-btn flex items-center gap-2 text-left group" data-amt="-$25.00" data-date="Today, 08:15" data-merchant="Blue Bottle Cafe" data-title="Blue Bottle Receipt #491">
+<img class="w-7 h-7 rounded-md object-cover ring-1 ring-surface-variant group-hover:opacity-90" data-alt="Close-up of a printed paper espresso bar coffee receipt on wooden table showing line items for espresso and croissant with clear thermal stamp in crisp lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCoe7pm1AI2KfInSRS-qNiZEy1o6ySq87Q810SVBW9TUl-9Dn3dgwJSryRky7WF5vjQovuSboXvhj9nSkEIG57aIDLtVKJ0nA30hxQzEEWoTlcGhOhCTJFyCiRrYgoAEfHyrUwsX4Q6mBts-c1r5Q0SwBtebSr2LppPgUctQ_8LGRzHR5LyFax5Tcwx4Cy4Nc3JBdbUSMmrzAyTZI7So3od71tCOVH8Vadn7m-RCWtb9MHUE99dMaRXsQ"/>
+<div class="flex items-center gap-1 font-label-sm text-label-sm text-on-surface font-medium">
+<span class="material-symbols-outlined text-[14px] text-secondary">check_circle</span>
+<span>View Photo</span>
+</div>
+</button>
+<div class="flex items-center gap-2">
+<button class="tax-tag-btn px-2 py-0.5 rounded-md bg-surface-container-highest text-on-surface font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">sell</span>
+              Meals 50%
+            </button>
+<button aria-label="More Options" class="w-7 h-7 flex items-center justify-center rounded-lg bg-surface-container-lowest text-on-surface-variant hover:text-on-surface">
+<span class="material-symbols-outlined text-[16px]">more_vert</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- GROUP: YESTERDAY -->
+<div class="transaction-group flex flex-col gap-space-xs">
+<div class="flex items-center justify-between py-1 px-1">
+<div class="flex items-center gap-1.5">
+<span class="font-headline-sm text-headline-sm text-on-surface">Yesterday</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Oct 23, 2024</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">-$299.00 Net</span>
+</div>
+<!-- Item 4: Office Depot (Has Paper Slip) -->
+<div class="transaction-item relative bg-surface-container-lowest rounded-xl p-3 shadow-sm flex flex-col gap-2 transition-transform" data-tags="card has-receipt">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center shrink-0 text-on-surface">
+<span class="material-symbols-outlined text-[20px]">print</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-2">
+<span class="font-label-lg text-label-lg text-on-surface truncate">Office Supplies Mart</span>
+<span class="px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-surface-container-highest text-on-surface">Equip</span>
+</div>
+<div class="flex items-center gap-2 mt-0.5">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Desk Organizer &amp; Paper</span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">·</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">16:10</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-end shrink-0 pl-2">
+<span class="font-headline-sm text-headline-sm text-on-surface">-$189.00</span>
+<span class="font-label-sm text-label-sm text-outline">Mastercard</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1.5 bg-surface-container-low/60 -mx-3 -mb-3 p-2.5 rounded-b-xl">
+<button class="preview-receipt-btn flex items-center gap-2 text-left group" data-amt="-$189.00" data-date="Yesterday, 16:10" data-merchant="Office Supplies Mart" data-title="Office Mart Purchase Slip">
+<img class="w-7 h-7 rounded-md object-cover ring-1 ring-surface-variant group-hover:opacity-90" data-alt="Long thermal store register receipt pinned neatly with visible itemized breakdown of desk accessories and tax calculated in bright neutral studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpQl-Xmwd21R8PEnPAQIq3sDtKtgvaSHM89YaE2cJo_WtPdTia48V71f0CxA5LGMpkULxRKVQlortdK6GsNCoV3xRUV67GG1Hox9UW4FA7LZR2exclJNJESn-0VGRQ0q-5JHVbzUp0lQ4roXxK-Xw5xZUoRmkdmFr3rpZ8eJVBi_pJBVFL1TTMlwQGmZQipsm1ye4IHgjRYH3OPWPkU-8c9UrexqnPpqnIQIx3juYYSh0NT9wM1SVUxw"/>
+<div class="flex items-center gap-1 font-label-sm text-label-sm text-on-surface font-medium">
+<span class="material-symbols-outlined text-[14px] text-secondary">check_circle</span>
+<span>View Photo</span>
+</div>
+</button>
+<div class="flex items-center gap-2">
+<button class="tax-tag-btn px-2 py-0.5 rounded-md bg-surface-container-highest text-on-surface font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[13px]">sell</span>
+              100% Write-off
+            </button>
+<button aria-label="Actions" class="w-7 h-7 flex items-center justify-center rounded-lg bg-surface-container-lowest text-on-surface-variant hover:text-on-surface">
+<span class="material-symbols-outlined text-[16px]">more_vert</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Item 5: Figma Subscription (Missing Receipt Alert) -->
+<div class="transaction-item relative bg-surface-container-lowest rounded-xl p-3 shadow-sm flex flex-col gap-2 transition-transform" data-tags="missing-receipt card">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center shrink-0 text-on-background">
+<span class="material-symbols-outlined text-[20px]">layers</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-2">
+<span class="font-label-lg text-label-lg text-on-surface truncate">Figma Professional</span>
+<span class="px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-error-container text-on-error-container">No Invoice</span>
+</div>
+<div class="flex items-center gap-2 mt-0.5">
+<span class="font-body-sm text-body-sm text-on-surface-variant">SaaS Subscription</span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">·</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">03:00</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-end shrink-0 pl-2">
+<span class="font-headline-sm text-headline-sm text-on-surface">-$110.00</span>
+<span class="font-label-sm text-label-sm text-outline">Card • 8812</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1.5 bg-surface-container-low/60 -mx-3 -mb-3 p-2.5 rounded-b-xl">
+<div class="flex items-center gap-1.5 text-error">
+<span class="material-symbols-outlined text-[16px]">help_center</span>
+<span class="font-label-sm text-label-sm font-semibold">Missing Invoice PDF</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="snap-now-btn px-2.5 py-1 bg-surface-container-highest hover:bg-surface-variant text-on-surface rounded-lg font-label-sm text-label-sm flex items-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-[14px]">upload_file</span>
+              Upload
+            </button>
+<button aria-label="Edit" class="w-7 h-7 flex items-center justify-center rounded-lg bg-surface-container-lowest text-on-surface-variant hover:text-on-surface">
+<span class="material-symbols-outlined text-[16px]">more_vert</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- GROUP: LAST WEEK -->
+<div class="transaction-group flex flex-col gap-space-xs">
+<div class="flex items-center justify-between py-1 px-1">
+<div class="flex items-center gap-1.5">
+<span class="font-headline-sm text-headline-sm text-on-surface">Last Week</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Oct 17 - Oct 20</span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary font-medium">+$2,840.50 Net</span>
+</div>
+<!-- Item 6: Cash Payment Direct -->
+<div class="transaction-item relative bg-surface-container-lowest rounded-xl p-3 shadow-sm flex flex-col gap-2 transition-transform" data-tags="cash has-receipt">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-10 h-10 rounded-xl bg-secondary-container/40 flex items-center justify-center shrink-0 text-secondary">
+<span class="material-symbols-outlined text-[20px]">local_atm</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-2">
+<span class="font-label-lg text-label-lg text-on-surface truncate">Onsite Workshop Fee</span>
+<span class="px-2 py-0.5 rounded-full font-label-sm text-label-sm bg-secondary-container text-on-secondary-container">Consulting</span>
+</div>
+<div class="flex items-center gap-2 mt-0.5">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Cash in Hand</span>
+<span class="text-on-surface-variant font-body-sm text-body-sm">·</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Oct 19</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-end shrink-0 pl-2">
+<span class="font-headline-sm text-headline-sm text-secondary font-bold">+$850.00</span>
+<span class="font-label-sm text-label-sm text-secondary">Cash</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1.5 bg-surface-container-low/60 -mx-3 -mb-3 p-2.5 rounded-b-xl">
+<button class="preview-receipt-btn flex items-center gap-2 text-left group" data-amt="+$850.00" data-date="Oct 19, 17:00" data-merchant="Apex Enterprise Lab" data-title="Workshop Signed Payment Voucher">
+<img class="w-7 h-7 rounded-md object-cover ring-1 ring-surface-variant group-hover:opacity-90" data-alt="Handwritten and stamped legal petty cash receipt voucher on crisp paper with signature line and company chop seal" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAUrgQj00mozsX_rKMAei7sX1UZk95o7dYwoCC7UrdBhW4Bo1dF16okmXQtNmzJUkKwLrw-rnYTAZtZ5f52FIzzN20AYNBtcQKOLOQNmwtepC3uOaKvSVxB9YvsbPN41geT6qOZmFWoKVp8q530poTgTGst6uwYxyFY_Uy1zReqq4niFoW4t9ovgoQd_wOF2wE1VEGp9XWdAP4mkCjGsujFrgngVuJLSGfb0FEkZFUMTxWPMx-iGxK-wg"/>
+<div class="flex items-center gap-1 font-label-sm text-label-sm text-secondary font-medium">
+<span class="material-symbols-outlined text-[14px]">task_alt</span>
+<span>Signed Voucher</span>
+</div>
+</button>
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded-md bg-surface-container-highest text-on-surface font-label-sm text-label-sm">Class C Inc.</span>
+<button aria-label="Voucher details" class="w-7 h-7 flex items-center justify-center rounded-lg bg-surface-container-lowest text-on-surface-variant hover:text-on-surface">
+<span class="material-symbols-outlined text-[16px]">more_vert</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Empty Filter State (Hidden by default) -->
+<div class="hidden flex flex-col items-center justify-center py-16 px-gutter text-center" id="empty-state">
+<div class="w-16 h-16 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant mb-3">
+<span class="material-symbols-outlined text-[32px]">folder_off</span>
+</div>
+<span class="font-headline-sm text-headline-sm text-on-surface">No matching transactions</span>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-xs mt-1">Try tweaking your search keywords or switching filter criteria.</p>
+<button class="mt-4 px-4 py-2 bg-on-background text-surface-container-lowest rounded-xl font-label-md text-label-md" id="reset-filter-btn">
+      Reset All Filters
+    </button>
+</div>
+<!-- Floating Camera Capture Quick-Button -->
+<div class="fixed bottom-20 right-4 z-40 flex flex-col items-end gap-2">
+<!-- Pulse ring behind camera -->
+<div class="relative">
+<span class="absolute -inset-1 rounded-full bg-secondary-fixed-dim opacity-75 blur-sm animate-pulse"></span>
+<button aria-label="Capture Receipt Photo" class="relative w-14 h-14 rounded-full bg-primary-container text-surface-container-lowest shadow-xl flex items-center justify-center active:scale-90 transition-transform" id="camera-snap-trigger">
+<span class="material-symbols-outlined text-[28px] text-secondary-fixed">photo_camera</span>
+</button>
+</div>
+</div>
+<!-- MODAL: Receipt Full View Lightbox -->
+<div class="fixed inset-0 z-50 hidden bg-on-background/70 backdrop-blur-sm flex flex-col justify-end" id="receipt-modal">
+<div class="bg-surface-container-lowest w-full rounded-t-3xl max-h-[795px] flex flex-col shadow-2xl overflow-hidden animate-in slide-in-from-bottom duration-200">
+<!-- Modal Header -->
+<div class="px-gutter pt-4 pb-3 flex items-center justify-between border-b-0 bg-surface-container-low">
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface" id="modal-doc-title">Receipt Document</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant" id="modal-doc-meta">Vanguard LLC · $1,450.00</span>
+</div>
+<button class="w-9 h-9 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface hover:bg-surface-variant" id="modal-close-btn">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Modal Image View Body -->
+<div class="p-gutter flex flex-col items-center gap-3 overflow-y-auto">
+<div class="relative w-full rounded-2xl overflow-hidden bg-surface-container-high shadow-inner aspect-[3/4] max-h-[442px] flex items-center justify-center">
+<img class="w-full h-full object-contain" data-alt="High resolution crisp photograph of an itemized transaction slip document held flat showing timestamp, merchant tax identifier, total line items and verified check mark watermark" id="modal-image" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGHYPZkdgZHgKCjLjKURA0XXTV0vbuuVOGLbeMMOpFat9DeQfDfqTk5vZcKwvWLxNvVoviVJHQIoitZUHkx2040Smbo1X6K99ucCnEecQ3Vj1jzIt6MkDaPnOG6WkvM1xhsK3HlDeMpeazpZ4gBYD2YnpgomHLk-7azebRVE4AkL6g7BViFI6OuEO0mdQ7SuWUsHRBzeLXuMTQwMp986PsiMJgsfHpYYM7g_o154_8v4PhYDEm99Ow9A"/>
+<div class="absolute bottom-3 right-3 px-3 py-1 bg-on-background/80 backdrop-blur-md rounded-full text-surface-container-lowest font-label-sm text-label-sm flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px] text-secondary-fixed">verified_user</span>
+            Audit Ready
+          </div>
+</div>
+<!-- Quick Detail Badge Bar -->
+<div class="w-full grid grid-cols-2 gap-2">
+<div class="p-3 bg-surface-container-low rounded-xl flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">OCR Recognition</span>
+<span class="font-label-lg text-label-lg text-secondary flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[16px]">task_alt</span> 100% Matched
+            </span>
+</div>
+<div class="p-3 bg-surface-container-low rounded-xl flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Deductibility</span>
+<span class="font-label-lg text-label-lg text-on-surface mt-0.5">Business • Schedule C</span>
+</div>
+</div>
+<!-- Action Row -->
+<div class="w-full flex items-center gap-2 pt-1 pb-4">
+<button class="flex-1 py-3 bg-primary-container text-surface-container-lowest rounded-xl font-label-lg text-label-lg flex items-center justify-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">share</span>
+            Export PDF
+          </button>
+<button class="py-3 px-4 bg-surface-container-highest text-on-surface rounded-xl font-label-lg text-label-lg flex items-center justify-center gap-1.5">
+<span class="material-symbols-outlined text-[18px]">crop</span>
+            Re-scan
+          </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Toast Micro Notification for Camera & Tags -->
+<div class="fixed top-20 left-1/2 -translate-x-1/2 z-50 hidden bg-primary-container text-surface-container-lowest px-4 py-2 rounded-full shadow-xl flex items-center gap-2 font-label-md text-label-md pointer-events-none transition-all" id="toast-pill">
+<span class="material-symbols-outlined text-[18px] text-secondary-fixed">check_circle</span>
+<span id="toast-text">Receipt scanner launched</span>
+</div>
+</div>
+<script>
+  (function initLedgerInteractions() {
+    const searchInput = document.getElementById('ledger-search-input');
+    const clearBtn = document.getElementById('clear-search-btn');
+    const filterPills = document.querySelectorAll('.filter-pill');
+    const monthPills = document.querySelectorAll('.month-pill');
+    const items = document.querySelectorAll('.transaction-item');
+    const groups = document.querySelectorAll('.transaction-group');
+    const emptyState = document.getElementById('empty-state');
+    const cameraTrigger = document.getElementById('camera-snap-trigger');
+    const snapNowBtns = document.querySelectorAll('.snap-now-btn');
+    const previewBtns = document.querySelectorAll('.preview-receipt-btn');
+    const receiptModal = document.getElementById('receipt-modal');
+    const modalClose = document.getElementById('modal-close-btn');
+    const modalTitle = document.getElementById('modal-doc-title');
+    const modalMeta = document.getElementById('modal-doc-meta');
+    const toast = document.getElementById('toast-pill');
+    const toastText = document.getElementById('toast-text');
+
+    let activeFilter = 'all';
+
+    function showToast(msg) {
+      if (!toast) return;
+      toastText.textContent = msg;
+      toast.classList.remove('hidden');
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 2400);
+    }
+
+    function applyFilter() {
+      const query = (searchInput.value || '').trim().toLowerCase();
+      let visibleCount = 0;
+
+      items.forEach(item => {
+        const itemText = item.innerText.toLowerCase();
+        const itemTags = item.getAttribute('data-tags') || '';
+        
+        const matchesQuery = !query || itemText.includes(query);
+        let matchesPill = true;
+
+        if (activeFilter === 'cash') matchesPill = itemTags.includes('cash');
+        else if (activeFilter === 'paypal') matchesPill = itemTags.includes('paypal');
+        else if (activeFilter === 'has-receipt') matchesPill = itemTags.includes('has-receipt');
+        else if (activeFilter === 'missing-receipt') matchesPill = itemTags.includes('missing-receipt');
+
+        if (matchesQuery && matchesPill) {
+          item.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          item.classList.add('hidden');
+        }
+      });
+
+      // Update groups visibility if all children are hidden
+      groups.forEach(group => {
+        const remaining = group.querySelectorAll('.transaction-item:not(.hidden)');
+        if (remaining.length === 0) {
+          group.classList.add('hidden');
+        } else {
+          group.classList.remove('hidden');
+        }
+      });
+
+      if (visibleCount === 0) {
+        emptyState.classList.remove('hidden');
+      } else {
+        emptyState.classList.add('hidden');
+      }
+
+      if (query.length > 0) {
+        clearBtn.classList.remove('hidden');
+      } else {
+        clearBtn.classList.add('hidden');
+      }
+    }
+
+    // Pill Filtering logic
+    filterPills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        filterPills.forEach(p => {
+          p.classList.remove('bg-on-background', 'text-surface-container-lowest');
+          p.classList.add('bg-surface-container-lowest', 'text-on-surface');
+        });
+        pill.classList.remove('bg-surface-container-lowest', 'text-on-surface');
+        pill.classList.add('bg-on-background', 'text-surface-container-lowest');
+        activeFilter = pill.getAttribute('data-filter') || 'all';
+        applyFilter();
+      });
+    });
+
+    // Month Selector feedback
+    monthPills.forEach(mp => {
+      mp.addEventListener('click', () => {
+        monthPills.forEach(p => {
+          p.classList.remove('bg-primary-container', 'text-on-primary');
+          p.classList.add('bg-surface-container-lowest', 'text-on-surface-variant');
+        });
+        mp.classList.remove('bg-surface-container-lowest', 'text-on-surface-variant');
+        mp.classList.add('bg-primary-container', 'text-on-primary');
+        showToast('Viewing ' + mp.innerText);
+      });
+    });
+
+    // Search events
+    searchInput.addEventListener('input', applyFilter);
+    clearBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      applyFilter();
+      searchInput.focus();
+    });
+
+    document.getElementById('reset-filter-btn')?.addEventListener('click', () => {
+      searchInput.value = '';
+      const allPill = document.querySelector('[data-filter="all"]');
+      if (allPill) allPill.click();
+    });
+
+    // Camera Quick Trigger
+    cameraTrigger.addEventListener('click', () => {
+      showToast('Camera active: Align receipt');
+    });
+
+    snapNowBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        showToast('Opening camera scanner...');
+      });
+    });
+
+    // Lightbox Modal
+    previewBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        modalTitle.textContent = btn.getAttribute('data-title') || 'Receipt Document';
+        modalMeta.textContent = (btn.getAttribute('data-merchant') || '') + ' • ' + (btn.getAttribute('data-amt') || '');
+        receiptModal.classList.remove('hidden');
+      });
+    });
+
+    modalClose.addEventListener('click', () => {
+      receiptModal.classList.add('hidden');
+    });
+
+    receiptModal.addEventListener('click', (e) => {
+      if (e.target === receiptModal) {
+        receiptModal.classList.add('hidden');
+      }
+    });
+
+    // Tax tag buttons
+    document.querySelectorAll('.tax-tag-btn').forEach(tb => {
+      tb.addEventListener('click', (e) => {
+        e.stopPropagation();
+        showToast('Tax classification updated');
+      });
+    });
+  })();
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.04)]" data-active-classes="text-primary font-semibold"><div class="h-16 px-space-xs flex items-center justify-around"><a class="flex flex-col items-center justify-center min-w-[64px] min-h-[44px] py-1 text-on-surface-variant hover:text-on-surface transition-colors" data-path="overview" href="#"><span class="material-symbols-outlined text-[24px]">dashboard</span><span class="font-label-sm text-label-sm mt-0.5">Overview</span></a><a class="flex flex-col items-center justify-center min-w-[64px] min-h-[44px] py-1 text-on-surface-variant hover:text-on-surface transition-colors" data-path="log-transaction" href="#"><span class="material-symbols-outlined text-[24px]">add_circle</span><span class="font-label-sm text-label-sm mt-0.5">Log</span></a><a aria-current="page" class="flex flex-col items-center justify-center min-w-[64px] min-h-[44px] py-1 transition-colors text-primary font-semibold" data-path="ledger" href="#"><span class="material-symbols-outlined text-[24px]">receipt_long</span><span class="font-label-sm text-label-sm mt-0.5">Ledger</span></a><a class="flex flex-col items-center justify-center min-w-[64px] min-h-[44px] py-1 text-on-surface-variant hover:text-on-surface transition-colors" data-path="tax-and-analytics" href="#"><span class="material-symbols-outlined text-[24px]">query_stats</span><span class="font-label-sm text-label-sm mt-0.5">Tax &amp; Analytics</span></a></div></nav></body></html>
