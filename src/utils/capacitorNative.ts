@@ -1,4 +1,5 @@
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { Filesystem, Directory } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';
 
 export interface PhotoCaptureResult {
@@ -33,7 +34,71 @@ export async function takeReceiptPhotoNative(): Promise<PhotoCaptureResult | nul
 }
 
 /**
- * Native file share / email launcher (passes generated PDF / statement file to Gmail, Outlook Mobile, or System Share)
+ * Saves a base64-encoded PDF or file to the Android device's Documents folder and triggers system share sheet
+ */
+export async function saveAndSharePdfNative(
+  pdfBase64Data: string,
+  fileName: string,
+  title: string,
+  text: string
+): Promise<{ success: boolean; nativeUri?: string; message: string }> {
+  // Extract base64 content
+  const base64Content = pdfBase64Data.includes('base64,')
+    ? pdfBase64Data.split('base64,')[1]
+    : pdfBase64Data;
+
+  try {
+    let savedFile;
+    try {
+      savedFile = await Filesystem.writeFile({
+        path: fileName,
+        data: base64Content,
+        directory: Directory.Documents,
+        recursive: true,
+      });
+    } catch (err) {
+      // Fallback to Cache if Documents folder requires special permission
+      savedFile = await Filesystem.writeFile({
+        path: fileName,
+        data: base64Content,
+        directory: Directory.Cache,
+        recursive: true,
+      });
+    }
+
+    const fileUri = savedFile.uri;
+
+    // Launch Android share sheet so user can select Gmail, Outlook Mobile, Drive, etc.
+    try {
+      const canShare = await Share.canShare();
+      if (canShare.value) {
+        await Share.share({
+          title,
+          text,
+          url: fileUri,
+          dialogTitle: 'Save / Share PDF Report',
+        });
+      }
+    } catch (shareErr) {
+      console.warn('Native share sheet dismissed or unavailable', shareErr);
+    }
+
+    return {
+      success: true,
+      nativeUri: fileUri,
+      message: `Saved to Documents/${fileName}`,
+    };
+  } catch (err) {
+    console.error('Error writing PDF file to device filesystem', err);
+    return {
+      success: false,
+      message: 'Failed to write PDF file to device storage',
+    };
+  }
+}
+
+/**
+ * Native file share / email launcher
  */
 export async function shareDocumentNative(title: string, text: string, url?: string): Promise<boolean> {
   try {

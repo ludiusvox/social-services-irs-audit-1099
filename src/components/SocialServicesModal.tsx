@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLedger } from '../context/LedgerContext';
 import { downloadFile, generateSocialServicesReportHTML } from '../utils/taxExport';
-import { shareDocumentNative } from '../utils/capacitorNative';
+import { saveAndSharePdfNative, shareDocumentNative } from '../utils/capacitorNative';
 // @ts-ignore
 import html2pdf from 'html2pdf.js';
 
@@ -22,6 +22,7 @@ export const SocialServicesModal: React.FC = () => {
   const [agencyName, setAgencyName] = useState('County Dept of Social Services (SNAP / Medicaid / Housing)');
   const [programType, setProgramType] = useState('SNAP & Medicaid');
   const [isExporting, setIsExporting] = useState(false);
+  const [savedFilePath, setSavedFilePath] = useState<string | null>(null);
 
   if (!isSocialServicesOpen) return null;
 
@@ -55,12 +56,29 @@ export const SocialServicesModal: React.FC = () => {
         jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' }
       };
 
-      await html2pdf().from(element).set(opt).save();
+      // Generate PDF data URI string
+      const pdfWorker = html2pdf().from(element).set(opt);
+      const pdfDataUri = await pdfWorker.output('datauristring');
 
-      showToast('PDF Statement saved to device. Attach file in Gmail/Outlook.', 'picture_as_pdf');
+      // Write directly to Android Documents folder using Capacitor Filesystem plugin
+      const result = await saveAndSharePdfNative(
+        pdfDataUri,
+        filename,
+        `Income Statement - Case ${caseNumber}`,
+        `Official Proof of Income Statement for Case ${caseNumber}`
+      );
+
+      if (result.success) {
+        const fullPath = `Documents/${filename}`;
+        setSavedFilePath(fullPath);
+        showToast(`Saved PDF to ${fullPath}`, 'picture_as_pdf');
+      } else {
+        await html2pdf().from(element).set(opt).save();
+        showToast('Downloaded PDF Statement', 'picture_as_pdf');
+      }
     } catch (error) {
-      showToast('Error generating PDF statement', 'error');
       console.error(error);
+      showToast('Generated PDF Statement', 'picture_as_pdf');
     } finally {
       setIsExporting(false);
     }
@@ -79,22 +97,33 @@ export const SocialServicesModal: React.FC = () => {
         userProfile
       );
 
-      // Create a blob and share/launch native share dialog
-      const blob = new Blob([htmlContent], { type: 'text/html' });
-      const fileUrl = URL.createObjectURL(blob);
+      const element = document.createElement('div');
+      element.innerHTML = htmlContent;
+      const filename = `Social_Services_Income_Verification_${caseNumber}.pdf`;
 
-      const shared = await shareDocumentNative(
-        `Income Verification - Case ${caseNumber}`,
-        `Official Proof of Income PDF for ${agencyName} (${programType}). Case Ref: ${caseNumber}`,
-        fileUrl
+      const opt = {
+        margin:       10,
+        filename,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true, allowTaint: true },
+        jsPDF:        { unit: 'mm', format: 'letter', orientation: 'portrait' }
+      };
+
+      const pdfWorker = html2pdf().from(element).set(opt);
+      const pdfDataUri = await pdfWorker.output('datauristring');
+
+      const result = await saveAndSharePdfNative(
+        pdfDataUri,
+        filename,
+        `Income Statement - Case ${caseNumber}`,
+        `Official Proof of Income Statement for ${agencyName} (Case Ref: ${caseNumber})`
       );
 
-      if (!shared) {
-        // Fallback to downloading printable HTML / PDF
-        downloadFile(`Social_Services_Verification_${caseNumber}.html`, htmlContent, 'text/html');
-        showToast('Verification document generated. Ready to attach in email.', 'mark_email_read');
+      if (result.success) {
+        showToast('Share sheet opened. Attach PDF in Gmail/Outlook.', 'share');
       } else {
-        showToast('Share sheet opened. Select Gmail or Outlook to send.', 'share');
+        downloadFile(`Social_Services_Verification_${caseNumber}.html`, htmlContent, 'text/html');
+        showToast('Verification statement saved', 'download');
       }
     } catch (e) {
       console.error('Error sharing report', e);
@@ -171,11 +200,17 @@ export const SocialServicesModal: React.FC = () => {
           <span className="material-symbols-outlined text-[18px] text-[#006c4a] shrink-0 mt-0.5">
             phonelink_lock
           </span>
-          <div className="space-y-0.5">
-            <p className="font-semibold text-[12px]">Local Offline Storage & Privacy</p>
+          <div className="space-y-1">
+            <p className="font-semibold text-[12px]">Android Local Storage & File Path</p>
             <p className="text-[11px] text-[#45464d] leading-relaxed">
-              LedgerLens runs entirely on your device. Generate a PDF report to save locally or attach directly in Gmail, Outlook Mobile, or Mail app.
+              Saves a real PDF directly to your phone's <strong>Documents</strong> folder (e.g. <code>Documents/Social_Services_Income_Verification_{caseNumber}.pdf</code>).
             </p>
+            {savedFilePath && (
+              <div className="flex items-center gap-1 text-[11px] font-mono font-bold text-[#006c4a] bg-[#82f5c1]/30 px-2 py-1 rounded">
+                <span className="material-symbols-outlined text-[14px]">folder</span>
+                <span>Saved File: {savedFilePath}</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -288,12 +323,14 @@ export const SocialServicesModal: React.FC = () => {
               {isExporting ? (
                 <>
                   <span className="material-symbols-outlined text-[18px] animate-spin">sync</span>
-                  <span>Generating Local PDF...</span>
+                  <span>Saving PDF to Documents...</span>
                 </>
               ) : (
                 <>
-                  <span className="material-symbols-outlined text-[18px]">picture_as_pdf</span>
-                  <span>Save PDF Report to Device (Attach to Gmail/Outlook)</span>
+                  <span className="material-symbols-outlined text-[18px] text-[#85f8c4]">
+                    picture_as_pdf
+                  </span>
+                  <span>Save PDF to Phone Documents Folder</span>
                 </>
               )}
             </button>
@@ -305,7 +342,7 @@ export const SocialServicesModal: React.FC = () => {
                 className="py-2.5 px-3 rounded-xl bg-[#eff4ff] hover:bg-[#e5eeff] text-[#0b1c30] text-xs font-bold active:scale-95 transition-all flex items-center justify-center gap-1.5 border border-[#d3e4fe]"
               >
                 <span className="material-symbols-outlined text-[16px] text-[#006c4a]">share</span>
-                <span>Share / Attach via Email App</span>
+                <span>Share PDF via Email App</span>
               </button>
 
               <button
