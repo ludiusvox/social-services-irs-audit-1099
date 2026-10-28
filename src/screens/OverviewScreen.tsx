@@ -75,7 +75,7 @@ export const OverviewScreen: React.FC = () => {
   }, [transactions]);
 
   return (
-    <div className="flex flex-col w-full px-4 space-y-4 pb-8">
+    <div className="flex flex-col w-full px-4 space-y-4 pt-2 pb-8">
       {/* Status & Welcome Card */}
       <section className="bg-[#ffffff] rounded-xl p-4 shadow-sm border border-[#e5eeff]/60">
         <div className="flex items-center justify-between">

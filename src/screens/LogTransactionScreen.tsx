@@ -142,7 +142,7 @@ export const LogTransactionScreen: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col w-full px-4 py-2 space-y-4 pb-12">
+    <div className="flex flex-col w-full px-4 pt-3 pb-12 space-y-4">
       {/* Hidden file input for camera / file upload */}
       <input
         ref={fileInputRef}

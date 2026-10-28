@@ -140,7 +140,7 @@ Audit Readiness: ${auditReadinessPercent}% (${vaultedCount} Verified Photo Proof
   };
 
   return (
-    <div className="flex flex-col w-full px-4 space-y-4 pb-16">
+    <div className="flex flex-col w-full px-4 space-y-4 pt-2 pb-16">
       {/* Tax Period Selector & Deadline Alert */}
       <div className="flex flex-col space-y-2 pt-1">
         <div className="flex items-center justify-between relative">

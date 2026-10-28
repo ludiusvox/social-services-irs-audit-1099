@@ -32,8 +32,8 @@ const AppContent: React.FC = () => {
       {/* Top Header */}
       <Header />
 
-      {/* Main Viewport Container */}
-      <main className="flex-1 flex flex-col relative w-full max-w-md mx-auto pt-[118px] pb-[108px] bg-[#f8f9ff]">
+      {/* Main Viewport Container with safe spacing below fixed header */}
+      <main className="flex-1 flex flex-col relative w-full max-w-md mx-auto pt-[138px] pb-[112px] bg-[#f8f9ff]">
         {activeScreen === 'overview' && <OverviewScreen />}
         {activeScreen === 'log' && <LogTransactionScreen />}
         {activeScreen === 'ledger' && <LedgerScreen />}

@@ -117,7 +117,7 @@ export const LedgerScreen: React.FC = () => {
   const vaultedPercent = totalLogs > 0 ? Math.round((vaultedCount / totalLogs) * 100) : 100;
 
   return (
-    <div className="flex flex-col w-full pb-24">
+    <div className="flex flex-col w-full pt-2 pb-24">
       {/* Top Search & Micro Header Area */}
       <div className="px-4 pt-3 pb-2 flex flex-col gap-2">
         <div className="relative w-full">
