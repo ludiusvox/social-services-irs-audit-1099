@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, ReactNode } from 'react';
 import { ScreenId, Transaction, ReceiptData, UserProfile } from '../types';
-import { INITIAL_TRANSACTIONS, INITIAL_RECEIPTS } from '../data/initialData';
+import { INITIAL_TRANSACTIONS } from '../data/initialData';
+import { db, enablePersistentStorage } from '../db/ledgerDatabase';
+import { getGroupForDate, normalizeTransactionGroups } from '../utils/dateGrouping';
 
 interface ToastState {
   id: number;
@@ -79,23 +81,10 @@ export const LedgerProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed: Transaction[] = JSON.parse(saved);
-        // Clean up any stale blob URLs from receipts that might have been saved in a prior session
-        return parsed.map(tx => {
-           if (tx.receipt && tx.receipt.imageUrl && tx.receipt.imageUrl.startsWith('blob:')) {
-              return {
-                 ...tx,
-                 receipt: {
-                    ...tx.receipt,
-                    imageUrl: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="600" viewBox="0 0 400 600"><rect width="400" height="600" fill="%23f1f5f9"/><text x="200" y="280" font-family="sans-serif" font-size="28" font-weight="bold" text-anchor="middle" fill="%23475569">Image Expired</text><text x="200" y="320" font-family="sans-serif" font-size="16" text-anchor="middle" fill="%2364748b">Please re-attach receipt</text></svg>',
-                    thumbnailUrl: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23f1f5f9"/><text x="50" y="55" font-family="sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="%23ba1a1a">Expired</text></svg>'
-                 }
-              };
-           }
-           return tx;
-        });
+        return normalizeTransactionGroups(parsed);
       }
     } catch (e) {
-      console.error('Failed to load transactions from localStorage', e);
+      console.error('Failed to parse transactions from localStorage fallback', e);
     }
     return INITIAL_TRANSACTIONS;
   });
@@ -104,9 +93,7 @@ export const LedgerProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     try {
       const saved = localStorage.getItem(RESERVE_KEY);
       if (saved) return parseFloat(saved);
-    } catch {
-      // fallback
-    }
+    } catch {}
     return 4605.00;
   });
 
@@ -119,11 +106,90 @@ export const LedgerProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const [isSocialServicesOpen, setIsSocialServicesOpen] = useState(false);
   const [toasts, setToasts] = useState<ToastState[]>([]);
 
+  // Load and sync from Dexie embedded NoSQL Database on mount
+  useEffect(() => {
+    let isMounted = true;
+
+    async function initializeNoSQLStore() {
+      // 1. Request persistent, non-volatile storage from engine
+      await enablePersistentStorage();
+
+      try {
+        // 2. Load transactions from Dexie NoSQL DB
+        const dbTxs = await db.transactions.toArray();
+
+        if (dbTxs && dbTxs.length > 0) {
+          // Normalize groups based on current date
+          const normalized = normalizeTransactionGroups(dbTxs);
+          if (isMounted) {
+            setTransactions(normalized);
+          }
+          await db.transactions.bulkPut(normalized);
+        } else {
+          // Fallback to legacy localStorage or initial state
+          const saved = localStorage.getItem(STORAGE_KEY);
+          if (saved) {
+            const parsed: Transaction[] = JSON.parse(saved);
+            const normalized = normalizeTransactionGroups(parsed);
+            if (isMounted) {
+              setTransactions(normalized);
+            }
+            await db.transactions.bulkPut(normalized);
+          }
+        }
+
+        // 3. Load user profile from Dexie NoSQL DB
+        const dbProfile = await db.userProfile.get('main_profile');
+        if (dbProfile) {
+          const { id, ...prof } = dbProfile;
+          if (isMounted) {
+            setUserProfile(prof);
+          }
+        }
+
+        // 4. Load allocated tax reserve setting
+        const reserveSetting = await db.settings.get('allocatedTaxReserve');
+        if (reserveSetting && typeof reserveSetting.value === 'number') {
+          if (isMounted) {
+            setAllocatedTaxReserve(reserveSetting.value);
+          }
+        }
+      } catch (err) {
+        console.error('[LedgerLens NoSQL] Database init error:', err);
+      }
+    }
+
+    initializeNoSQLStore();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Re-normalize date groups on visibilitychange (e.g. app reopened after midnight rollover)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        setTransactions((prev) => {
+          const updated = normalizeTransactionGroups(prev);
+          db.transactions.bulkPut(updated).catch(console.error);
+          return updated;
+        });
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
+
+  // Sync state changes to localStorage backup
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions));
     } catch (e) {
-      console.error('Failed to persist transactions', e);
+      console.error('Failed to sync secondary storage', e);
     }
   }, [transactions]);
 
@@ -135,57 +201,90 @@ export const LedgerProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     }, 2800);
   };
 
-  const saveUserProfile = (profile: UserProfile) => {
+  const saveUserProfile = async (profile: UserProfile) => {
     setUserProfile(profile);
     try {
       localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
-    } catch {}
+      await db.userProfile.put({ ...profile, id: 'main_profile' });
+    } catch (err) {
+      console.error('[LedgerLens NoSQL] Failed saving user profile', err);
+    }
     setActiveScreen('overview');
-    showToast('Profile saved successfully', 'person');
+    showToast('Profile saved to embedded NoSQL database', 'database');
   };
 
-  const addTransaction = (txData: Omit<Transaction, 'id' | 'createdAt' | 'group'>) => {
+  const addTransaction = async (txData: Omit<Transaction, 'id' | 'createdAt' | 'group'>) => {
+    const createdAt = Date.now();
+    const group = getGroupForDate(txData.date, createdAt);
+
     const newTx: Transaction = {
       ...txData,
-      id: `tx-user-${Date.now()}`,
-      group: 'Today',
-      createdAt: Date.now(),
+      id: `tx-user-${createdAt}`,
+      group,
+      createdAt,
     };
 
     setTransactions((prev) => [newTx, ...prev]);
-    showToast('Transaction saved to Ledger & Photo Vault', 'inventory_2');
+
+    try {
+      await db.transactions.put(newTx);
+    } catch (err) {
+      console.error('[LedgerLens NoSQL] Failed inserting transaction', err);
+    }
+
+    showToast('Saved to embedded NoSQL DB & Vault', 'database');
   };
 
-  const attachReceiptToTransaction = (txId: string, receipt: ReceiptData) => {
+  const attachReceiptToTransaction = async (txId: string, receipt: ReceiptData) => {
+    let updatedTx: Transaction | null = null;
+
     setTransactions((prev) =>
       prev.map((tx) => {
         if (tx.id === txId) {
-          return {
+          updatedTx = {
             ...tx,
             hasReceipt: true,
             missingProofReason: undefined,
             tag: tx.tag === 'Audit Alert' || tx.tag === 'No Invoice' ? 'Verified' : tx.tag,
             receipt,
           };
+          return updatedTx;
         }
         return tx;
       })
     );
+
+    if (updatedTx) {
+      try {
+        await db.transactions.put(updatedTx);
+      } catch (err) {
+        console.error('[LedgerLens NoSQL] Failed updating receipt', err);
+      }
+    }
+
     setAttachingTxId(null);
-    showToast('Proof attached & 100% audit verified', 'task_alt');
+    showToast('Proof attached & persisted in NoSQL Vault', 'task_alt');
   };
 
-  const deleteTransaction = (txId: string) => {
+  const deleteTransaction = async (txId: string) => {
     setTransactions((prev) => prev.filter((tx) => tx.id !== txId));
-    showToast('Transaction removed from ledger', 'delete');
+    try {
+      await db.transactions.delete(txId);
+    } catch (err) {
+      console.error('[LedgerLens NoSQL] Failed deleting transaction', err);
+    }
+    showToast('Transaction removed from NoSQL DB', 'delete');
   };
 
-  const allocateReserve = (amount: number) => {
+  const allocateReserve = async (amount: number) => {
     setAllocatedTaxReserve(amount);
     try {
       localStorage.setItem(RESERVE_KEY, amount.toString());
-    } catch {}
-    showToast(`Allocated $${amount.toLocaleString('en-US', { minimumFractionDigits: 2 })} to Tax Vault sub-account`, 'savings');
+      await db.settings.put({ key: 'allocatedTaxReserve', value: amount });
+    } catch (err) {
+      console.error('[LedgerLens NoSQL] Failed storing tax reserve setting', err);
+    }
+    showToast(`Allocated $${amount.toLocaleString('en-US', { minimumFractionDigits: 2 })} to Tax Vault NoSQL store`, 'savings');
   };
 
   // Metrics computation

@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useLedger } from '../context/LedgerContext';
 import { Transaction } from '../types';
+import { getGroupForDate } from '../utils/dateGrouping';
 
 export const LedgerScreen: React.FC = () => {
   const {
@@ -15,12 +16,10 @@ export const LedgerScreen: React.FC = () => {
   } = useLedger();
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedMonth, setSelectedMonth] = useState(() => {
-    return new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-  });
+  const [selectedMonth, setSelectedMonth] = useState<string>('All');
 
   const recentMonths = useMemo(() => {
-    const months = [];
+    const months = ['All'];
     for (let i = 0; i < 3; i++) {
       const d = new Date();
       d.setMonth(d.getMonth() - i);
@@ -28,12 +27,22 @@ export const LedgerScreen: React.FC = () => {
     }
     return months;
   }, []);
+
   const [activeFilter, setActiveFilter] = useState<'all' | 'cash' | 'paypal' | 'has-receipt' | 'missing-receipt'>('all');
   const [activeMenuTxId, setActiveMenuTxId] = useState<string | null>(null);
 
   // Filtered transactions
   const filteredTransactions = useMemo(() => {
     return transactions.filter((tx) => {
+      // Month pill filter
+      if (selectedMonth && selectedMonth !== 'All' && !searchQuery.trim()) {
+        const txDateObj = tx.date ? new Date(tx.date + 'T12:00:00') : new Date(tx.createdAt);
+        const txMonthStr = txDateObj.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+        if (txMonthStr !== selectedMonth) {
+          return false;
+        }
+      }
+
       // Search filter
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
@@ -63,16 +72,22 @@ export const LedgerScreen: React.FC = () => {
 
       return true;
     });
-  }, [transactions, searchQuery, activeFilter]);
+  }, [transactions, searchQuery, selectedMonth, activeFilter]);
 
-  // Group transactions by group property
+  // Group transactions by dynamic group property calculated from current system date
   const groupedTransactions = useMemo(() => {
     const groups: { name: string; dateSubtitle: string; netTotal: number; items: Transaction[] }[] = [];
-    
-    const todayItems = filteredTransactions.filter((t) => t.group === 'Today');
-    const yesterdayItems = filteredTransactions.filter((t) => t.group === 'Yesterday');
-    const lastWeekItems = filteredTransactions.filter((t) => t.group === 'Last Week');
-    const earlierItems = filteredTransactions.filter((t) => t.group === 'Earlier');
+
+    // Recalculate group for each transaction relative to today
+    const categorized = filteredTransactions.map((t) => ({
+      ...t,
+      dynamicGroup: getGroupForDate(t.date, t.createdAt),
+    }));
+
+    const todayItems = categorized.filter((t) => t.dynamicGroup === 'Today');
+    const yesterdayItems = categorized.filter((t) => t.dynamicGroup === 'Yesterday');
+    const lastWeekItems = categorized.filter((t) => t.dynamicGroup === 'Last Week');
+    const earlierItems = categorized.filter((t) => t.dynamicGroup === 'Earlier');
 
     const formatDate = (date: Date) => date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     const today = new Date();
@@ -99,7 +114,7 @@ export const LedgerScreen: React.FC = () => {
     return groups;
   }, [filteredTransactions]);
 
-  const vaultedPercent = totalLogs > 0 ? Math.round((vaultedCount / totalLogs) * 100) : 94;
+  const vaultedPercent = totalLogs > 0 ? Math.round((vaultedCount / totalLogs) * 100) : 100;
 
   return (
     <div className="flex flex-col w-full pb-24">
@@ -118,6 +133,7 @@ export const LedgerScreen: React.FC = () => {
           />
           {searchQuery && (
             <button
+              type="button"
               aria-label="Clear Search"
               onClick={() => setSearchQuery('')}
               className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#76777d] hover:text-[#0b1c30]"
@@ -137,7 +153,7 @@ export const LedgerScreen: React.FC = () => {
                 type="button"
                 onClick={() => {
                   setSelectedMonth(month);
-                  showToast(`Viewing ${month}`, 'calendar_today');
+                  showToast(month === 'All' ? 'Viewing all time records' : `Viewing ${month}`, 'calendar_today');
                 }}
                 className={`px-3.5 py-1.5 rounded-full font-label-sm text-[11px] shadow-xs transition-all whitespace-nowrap active:scale-95 ${
                   isSelected
@@ -145,13 +161,16 @@ export const LedgerScreen: React.FC = () => {
                     : 'bg-[#ffffff] text-[#45464d] hover:bg-[#e5eeff] border border-[#e5eeff]'
                 }`}
               >
-                {month}
+                {month === 'All' ? 'All Months' : month}
               </button>
             );
           })}
           <button
             type="button"
-            onClick={() => showToast('Custom date range filter opened', 'date_range')}
+            onClick={() => {
+              setSelectedMonth('All');
+              showToast('Showing all historical records', 'date_range');
+            }}
             className="px-3 py-1.5 rounded-full font-label-sm text-[11px] bg-[#ffffff] text-[#45464d] shadow-xs transition-all flex items-center gap-1 whitespace-nowrap border border-[#e5eeff] hover:bg-[#e5eeff]"
           >
             <span className="material-symbols-outlined text-[15px]">calendar_month</span>
@@ -239,7 +258,7 @@ export const LedgerScreen: React.FC = () => {
                 {totalLogs}
               </span>
               <span className="font-label-sm text-[11px] text-[#006c4a] flex items-center font-semibold">
-                <span className="material-symbols-outlined text-[14px]">trending_up</span>+4
+                <span className="material-symbols-outlined text-[14px]">database</span>NoSQL Active
               </span>
             </div>
           </div>
@@ -346,7 +365,7 @@ export const LedgerScreen: React.FC = () => {
                                 {item.counterparty}
                               </span>
                               <span className="font-body-sm text-[11px] text-[#76777d]">
-                                {new Date(item.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                {new Date((item.date || '') + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                               </span>
                               {item.tag && (
                                 <span
@@ -480,7 +499,7 @@ export const LedgerScreen: React.FC = () => {
                       {/* Dropdown menu for more options if opened */}
                       {activeMenuTxId === item.id && (
                         <div className="p-2 bg-[#ffffff] rounded-lg border border-[#e5eeff] shadow-md flex items-center justify-between text-xs animate-in fade-in duration-150">
-                          <span className="text-[#45464d]">ID: {item.id.slice(0,8)}...</span>
+                          <span className="text-[#45464d]">ID: {item.id.slice(0, 8)}...</span>
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() => {
@@ -512,54 +531,21 @@ export const LedgerScreen: React.FC = () => {
           })}
         </div>
       ) : (
-        /* Empty Filter State */
-        <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
-          <div className="w-16 h-16 rounded-full bg-[#d3e4fe] flex items-center justify-center text-[#45464d] mb-3">
-            <span className="material-symbols-outlined text-[32px]">folder_off</span>
+        /* Empty State */
+        <div className="px-4 py-12 flex flex-col items-center justify-center text-center space-y-3">
+          <div className="w-16 h-16 rounded-full bg-[#eff4ff] flex items-center justify-center text-[#76777d]">
+            <span className="material-symbols-outlined text-3xl">database</span>
           </div>
-          <span className="font-headline-sm text-[16px] font-bold text-[#0b1c30]">
-            No matching transactions
-          </span>
-          <p className="font-body-md text-[13px] text-[#45464d] max-w-xs mt-1">
-            Try tweaking your search keywords or switching filter criteria.
+          <h3 className="font-headline-sm text-base font-bold text-[#0b1c30]">
+            No Transactions Found
+          </h3>
+          <p className="font-body-sm text-xs text-[#45464d] max-all-w-[280px]">
+            {searchQuery || activeFilter !== 'all' || selectedMonth !== 'All'
+              ? 'Try adjusting your search terms or filter selection.'
+              : 'Log your first income or expense item to populate your persistent NoSQL ledger.'}
           </p>
-          <button
-            type="button"
-            onClick={() => {
-              setSearchQuery('');
-              setActiveFilter('all');
-            }}
-            className="mt-4 px-4 py-2 bg-[#0b1c30] text-[#ffffff] rounded-xl font-label-md text-[12px] font-semibold hover:opacity-90 active:scale-95 transition-all shadow-sm"
-          >
-            Reset All Filters
-          </button>
         </div>
       )}
-
-      {/* Floating Camera Capture Quick-Button */}
-      <div className="fixed bottom-20 right-4 z-40 flex flex-col items-end gap-2">
-        <div className="relative">
-          <span className="absolute -inset-1 rounded-full bg-[#68dba9] opacity-75 blur-sm animate-pulse" />
-          <button
-            type="button"
-            aria-label="Capture Receipt Photo"
-            onClick={() => {
-              // Open photo attach for the first unreconciled transaction or notify
-              const unreconciled = transactions.find((t) => !t.hasReceipt);
-              if (unreconciled) {
-                setAttachingTxId(unreconciled.id);
-              } else {
-                showToast('Camera active: Align receipt', 'photo_camera');
-              }
-            }}
-            className="relative w-14 h-14 rounded-full bg-[#131b2e] text-[#ffffff] shadow-xl flex items-center justify-center active:scale-90 transition-transform"
-          >
-            <span className="material-symbols-outlined text-[28px] text-[#85f8c4]">
-              photo_camera
-            </span>
-          </button>
-        </div>
-      </div>
     </div>
   );
 };

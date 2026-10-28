@@ -30,6 +30,7 @@ export const TaxAnalyticsScreen: React.FC = () => {
   const [isPeriodMenuOpen, setIsPeriodMenuOpen] = useState(false);
 
   const expenses = transactions.filter(t => t.type === 'expense');
+  const reserveNeeded = Math.max(0, netProfit * 0.25);
 
   const line27a = expenses.filter(t => t.categoryLine === 'Line 27a').reduce((acc, t) => acc + t.amount, 0);
   const line9 = expenses.filter(t => t.categoryLine === 'Line 9').reduce((acc, t) => acc + t.amount, 0);
