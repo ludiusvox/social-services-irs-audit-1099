@@ -28,7 +28,6 @@ function findSourceIcon() {
 
   const candidatePaths = [
     path.join('C:', 'Users', 'Aaron', 'Downloads', 'icon rev-01.png'),
-    path.join('C:', 'Users', 'Aaron', 'Downloads', 'icon rev-01a.png'),
     path.join(process.cwd(), 'assets', 'icon.png'),
     path.join(process.cwd(), 'resources', 'icon.png'),
     path.join(process.cwd(), 'public', 'icon.png')
@@ -43,6 +42,23 @@ function findSourceIcon() {
   throw new Error(
     'Source icon not found. Please provide an icon path or place icon rev-01.png in Downloads or assets/icon.png.'
   );
+}
+
+/**
+ * Locate 1024x500 feature graphic background source
+ */
+function findFeatureGraphicSource() {
+  const candidatePaths = [
+    path.join('C:', 'Users', 'Aaron', 'Downloads', 'icon rev-01a.png'),
+    path.join(process.cwd(), 'assets', 'icon rev-01a.png')
+  ];
+
+  for (const candidate of candidatePaths) {
+    if (fs.existsSync(candidate)) {
+      return candidate;
+    }
+  }
+  return null;
 }
 
 /**
@@ -80,6 +96,7 @@ async function generateIcons() {
     // 1. Generate Google Play Store 512x512 App Icon
     console.log('\n🚀 Generating Play Store 512x512 App Icon...');
     const playStoreIconPath = path.join(STORE_DIR, 'play_store_512.png');
+    const appIcon512Path = path.join(STORE_DIR, 'app_icon_512x512.png');
     const webLauncherPath = path.join(ANDROID_MAIN_DIR, 'ic_launcher-web.png');
 
     await sharp(sourcePath)
@@ -87,11 +104,52 @@ async function generateIcons() {
       .toFormat('png')
       .toFile(playStoreIconPath);
 
+    fs.copyFileSync(playStoreIconPath, appIcon512Path);
     fs.copyFileSync(playStoreIconPath, webLauncherPath);
-    console.log(`  ✅ Play Store Icon: ${playStoreIconPath}`);
+    console.log(`  ✅ Play Store Icon (512x512): ${playStoreIconPath}`);
+    console.log(`  ✅ App Icon (512x512): ${appIcon512Path}`);
     console.log(`  ✅ Android Web Launcher: ${webLauncherPath}`);
 
-    // 2. Generate Android Launcher Icons across all mipmap densities
+    // 2. Generate Google Play Store 1024x500 Feature Graphic Background
+    console.log('\n🖼️  Generating Play Store 1024x500 Feature Graphic Background...');
+    const featureGraphicPath = path.join(STORE_DIR, 'feature_graphic_1024x500.png');
+    const featureGraphicBrandedPath = path.join(STORE_DIR, 'feature_graphic_1024x500_branded.png');
+
+    const featureSourcePath = findFeatureGraphicSource();
+    if (featureSourcePath) {
+      await sharp(featureSourcePath)
+        .resize(1024, 500, { fit: 'cover', kernel: 'lanczos3' })
+        .toFormat('png')
+        .toFile(featureGraphicPath);
+      console.log(`  ✅ Feature Graphic (1024x500 from source): ${featureGraphicPath}`);
+    } else {
+      await sharp(sourcePath)
+        .resize(1024, 500, { fit: 'cover', kernel: 'lanczos3' })
+        .toFormat('png')
+        .toFile(featureGraphicPath);
+      console.log(`  ✅ Feature Graphic (1024x500): ${featureGraphicPath}`);
+    }
+
+    // Centered brand composite graphic
+    const overlayBuffer = await sharp(sourcePath)
+      .resize(320, 320, { fit: 'contain' })
+      .toBuffer();
+
+    await sharp({
+      create: {
+        width: 1024,
+        height: 500,
+        channels: 4,
+        background: { r: 15, g: 23, b: 42, alpha: 1 } // Deep slate navy (#0F172A)
+      }
+    })
+      .composite([{ input: overlayBuffer, top: 90, left: 352 }])
+      .toFormat('png')
+      .toFile(featureGraphicBrandedPath);
+
+    console.log(`  ✅ Branded Feature Graphic (1024x500): ${featureGraphicBrandedPath}`);
+
+    // 3. Generate Android Launcher Icons across all mipmap densities
     console.log('\n📱 Generating Android Launcher & Adaptive Icons...');
 
     for (const item of ICON_SIZES) {
@@ -121,7 +179,6 @@ async function generateIcons() {
         .toFile(roundLauncherPath);
 
       // Adaptive foreground icon (ic_launcher_foreground.png)
-      // Safe zone size inside adaptive viewport (approx 61% of total viewport size)
       const innerSize = Math.round(item.adaptiveSize * 0.61);
       const foregroundPath = path.join(folderPath, 'ic_launcher_foreground.png');
 
@@ -150,7 +207,7 @@ async function generateIcons() {
       console.log(`  ✅ Density ${item.density}: standard (${item.size}px), round (${item.size}px), adaptive (${item.adaptiveSize}px)`);
     }
 
-    console.log('\n✨ All Android app store & launcher icons generated successfully!');
+    console.log('\n✨ All Android app store & feature graphic images generated successfully!');
   } catch (err) {
     console.error('❌ Error generating icons:', err);
     process.exit(1);
