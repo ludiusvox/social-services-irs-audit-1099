@@ -188,7 +188,8 @@ Audit Readiness: ${auditReadinessPercent}% (${vaultedCount} Verified Photo Proof
           </span>
         </div>
 
-        {/* Friendly Deadline Banner */}
+      {/* Friendly Deadline Banner */}
+      {transactions.length > 0 && vaultedCount === transactions.length && (
         <div className="flex items-start gap-3 p-4 rounded-xl bg-[#82f5c1]/30 text-[#0b1c30] shadow-sm border border-[#82f5c1]/50">
           <div className="w-9 h-9 rounded-full bg-[#82f5c1] flex items-center justify-center shrink-0 text-[#00714e]">
             <span
@@ -212,6 +213,7 @@ Audit Readiness: ${auditReadinessPercent}% (${vaultedCount} Verified Photo Proof
             </p>
           </div>
         </div>
+      )}
       </div>
 
       {/* Tax Snapshot Bento */}
@@ -299,7 +301,7 @@ Audit Readiness: ${auditReadinessPercent}% (${vaultedCount} Verified Photo Proof
               <span className="material-symbols-outlined text-[15px] text-[#85f8c4]">info</span>
             </div>
             <span className="font-headline-lg text-[26px] font-bold text-[#ffffff] mt-0.5 tabular-nums">
-              ${allocatedTaxReserve.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              ${(netProfit * 0.25).toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </span>
             <span className="font-body-sm text-[11px] text-[#bec6e0]">
               Self-Employment (15.3%) + Fed/State Est.
@@ -512,6 +514,62 @@ Audit Readiness: ${auditReadinessPercent}% (${vaultedCount} Verified Photo Proof
               No expenses logged yet.
             </div>
           )}
+        </div>
+      </div>
+
+      {/* FICA & Medicaid Tax Estimator Card */}
+      <div className="p-4 rounded-xl bg-[#ffffff] shadow-sm flex flex-col space-y-3 border border-[#e5eeff]/60">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="font-headline-sm text-[16px] font-bold text-[#0b1c30]">
+              FICA & Medicaid Tax Estimation
+            </h3>
+            <p className="font-body-sm text-[12px] text-[#45464d] mt-0.5">
+              Self-Employment Contributions Act (SECA) & Health Contribution Breakdown
+            </p>
+          </div>
+          <span className="material-symbols-outlined text-[22px] text-[#006c4a]">calculate</span>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2.5 pt-1">
+          <div className="p-3 rounded-lg bg-[#eff4ff]/60 border border-[#e5eeff] flex flex-col">
+            <span className="font-label-sm text-[11px] text-[#45464d] font-semibold">Social Security (12.4%)</span>
+            <span className="font-headline-sm text-[18px] font-bold text-[#0b1c30] mt-1 tabular-nums">
+              ${(Math.max(0, netProfit * 0.9235) * 0.124).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </span>
+            <span className="font-body-sm text-[10px] text-[#45464d] mt-0.5">On 92.35% Net SE Income</span>
+          </div>
+
+          <div className="p-3 rounded-lg bg-[#eff4ff]/60 border border-[#e5eeff] flex flex-col">
+            <span className="font-label-sm text-[11px] text-[#45464d] font-semibold">Medicare Tax (2.9%)</span>
+            <span className="font-headline-sm text-[18px] font-bold text-[#0b1c30] mt-1 tabular-nums">
+              ${(Math.max(0, netProfit * 0.9235) * 0.029).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            </span>
+            <span className="font-body-sm text-[10px] text-[#45464d] mt-0.5">Hospital Insurance SECA</span>
+          </div>
+        </div>
+
+        <div className="p-3 rounded-lg bg-[#f8f9ff] border border-[#e5eeff] flex items-center justify-between">
+          <div className="flex flex-col">
+            <span className="font-label-sm text-[12px] font-bold text-[#0b1c30]">Total FICA (SECA) Tax Liability</span>
+            <span className="font-body-sm text-[11px] text-[#45464d]">Combined Social Security & Medicare</span>
+          </div>
+          <span className="font-headline-md text-[18px] font-bold text-[#006c4a] tabular-nums">
+            ${(Math.max(0, netProfit * 0.9235) * 0.153).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </span>
+        </div>
+
+        <div className="p-3 rounded-lg bg-[#e8f8f2]/60 border border-[#82f5c1]/50 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <span className="material-symbols-outlined text-[20px] text-[#006c4a]">medical_services</span>
+            <div className="flex flex-col">
+              <span className="font-label-sm text-[12px] font-bold text-[#0b1c30]">Medicaid / ACA Premium Estimate (5%)</span>
+              <span className="font-body-sm text-[11px] text-[#45464d]">Estimated health coverage contribution</span>
+            </div>
+          </div>
+          <span className="font-headline-md text-[16px] font-bold text-[#006c4a] tabular-nums">
+            ${(Math.max(0, netProfit) * 0.05).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </span>
         </div>
       </div>
 
