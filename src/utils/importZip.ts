@@ -6,9 +6,16 @@ export async function importTransactionsFromZip(file: File): Promise<Transaction
   const zip = new JSZip();
   const loadedZip = await zip.loadAsync(file);
 
-  const csvFile = loadedZip.file('Schedule_C_Ledger_2026.csv');
+  let csvFile = loadedZip.file('Schedule_C_Ledger_2027.csv') || loadedZip.file('Schedule_C_Ledger_2026.csv');
   if (!csvFile) {
-    throw new Error('CSV file "Schedule_C_Ledger_2026.csv" not found in zip');
+    const csvMatches = loadedZip.file(/Schedule_C_Ledger.*\.csv$/i);
+    if (csvMatches.length > 0) {
+      csvFile = csvMatches[0];
+    }
+  }
+
+  if (!csvFile) {
+    throw new Error('CSV ledger file not found in zip archive');
   }
 
   const csvText = await csvFile.async('string');

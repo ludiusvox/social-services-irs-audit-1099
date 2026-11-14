@@ -24,7 +24,7 @@ export const TaxAnalyticsScreen: React.FC = () => {
     userProfile,
   } = useLedger();
 
-  const [selectedPeriod, setSelectedPeriod] = useState('Tax Year 2026 (Q1–Q4)');
+  const [selectedPeriod, setSelectedPeriod] = useState('Tax Year 2027 (Q1–Q4)');
   const [isDownloadingZip, setIsDownloadingZip] = useState(false);
   const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
   const [isDownloadingCsv, setIsDownloadingCsv] = useState(false);
@@ -33,6 +33,28 @@ export const TaxAnalyticsScreen: React.FC = () => {
   const [isImporting, setIsImporting] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const activeTaxYear = selectedPeriod.includes('2026') ? '2026' : '2027';
+
+  const periodTransactions = React.useMemo(() => {
+    if (selectedPeriod.includes('2027')) {
+      if (selectedPeriod.includes('Q1 2027')) return transactions.filter(t => t.date >= '2027-01-01' && t.date <= '2027-03-31');
+      if (selectedPeriod.includes('Q2 2027')) return transactions.filter(t => t.date >= '2027-04-01' && t.date <= '2027-06-30');
+      if (selectedPeriod.includes('Q3 2027')) return transactions.filter(t => t.date >= '2027-07-01' && t.date <= '2027-09-30');
+      if (selectedPeriod.includes('Q4 2027')) return transactions.filter(t => t.date >= '2027-10-01' && t.date <= '2027-12-31');
+      const txs2027 = transactions.filter(t => t.date.startsWith('2027'));
+      return txs2027.length > 0 ? txs2027 : transactions;
+    }
+    if (selectedPeriod.includes('2026')) {
+      if (selectedPeriod.includes('Q1 2026')) return transactions.filter(t => t.date >= '2026-01-01' && t.date <= '2026-03-31');
+      if (selectedPeriod.includes('Q2 2026')) return transactions.filter(t => t.date >= '2026-04-01' && t.date <= '2026-06-30');
+      if (selectedPeriod.includes('Q3 2026')) return transactions.filter(t => t.date >= '2026-07-01' && t.date <= '2026-09-30');
+      if (selectedPeriod.includes('Q4 2026')) return transactions.filter(t => t.date >= '2026-10-01' && t.date <= '2026-12-31');
+      const txs2026 = transactions.filter(t => t.date.startsWith('2026'));
+      return txs2026.length > 0 ? txs2026 : transactions;
+    }
+    return transactions;
+  }, [transactions, selectedPeriod]);
 
   const handleImportZip = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -55,7 +77,7 @@ export const TaxAnalyticsScreen: React.FC = () => {
     }
   };
 
-  const expenses = transactions.filter(t => t.type === 'expense');
+  const expenses = periodTransactions.filter(t => t.type === 'expense');
   const reserveNeeded = Math.max(0, netProfit * 0.25);
 
   const line27a = expenses.filter(t => t.categoryLine === 'Line 27a').reduce((acc, t) => acc + t.amount, 0);
@@ -80,15 +102,16 @@ export const TaxAnalyticsScreen: React.FC = () => {
     setIsDownloadingZip(true);
     try {
       const zipBlob = await generateTaxBundleZip(
-        transactions,
+        periodTransactions,
         grossIncome,
         totalExpenses,
         netProfit,
-        userProfile
+        userProfile,
+        activeTaxYear
       );
       const sizeMb = (zipBlob.size / (1024 * 1024)).toFixed(1);
       const sizeDisplay = zipBlob.size >= 1024 * 1024 ? `${sizeMb} MB` : `${Math.round(zipBlob.size / 1024)} KB`;
-      downloadFile('LedgerLens_TaxBundle_2026.zip', zipBlob, 'application/zip');
+      downloadFile(`LedgerLens_TaxBundle_${activeTaxYear}.zip`, zipBlob, 'application/zip');
       showToast(`Complete Tax Bundle ZIP downloaded (${sizeDisplay})`, 'archive');
     } catch (e) {
       showToast('Downloaded Complete Tax Package', 'archive');
@@ -102,10 +125,10 @@ export const TaxAnalyticsScreen: React.FC = () => {
     setTimeout(() => {
       setIsDownloadingPdf(false);
       // Trigger Schedule C Summary statement
-      const summaryText = `LEDGERLENS TAX YEAR 2026 IRS SCHEDULE C OFFICIAL ALLOCATIONS
+      const summaryText = `LEDGERLENS TAX YEAR ${activeTaxYear} IRS SCHEDULE C OFFICIAL ALLOCATIONS
 =============================================================
 Taxpayer: ${userProfile?.name || 'User'} (${userProfile?.businessName || 'Business'})
-Tax Period: 2026 Annual (Q1-Q4)
+Tax Period: ${selectedPeriod}
 Status: Reconciled & Audit-Proofed
 
 PART I: INCOME
@@ -127,8 +150,8 @@ Line 31: Net Profit: $${netProfit.toLocaleString('en-US', { minimumFractionDigit
 Estimated Safe Harbor Tax Reserve (25%): $${Math.max(0, netProfit * 0.25).toLocaleString('en-US', { minimumFractionDigits: 2 })}
 Audit Readiness: ${auditReadinessPercent}% (${vaultedCount} Verified Photo Proofs)
 `;
-      const htmlContent = `<!DOCTYPE html><html><head><title>Schedule C Summary 2026</title></head><body style="font-family: monospace; white-space: pre-wrap; padding: 20px;">${summaryText}</body></html>`;
-      downloadFile('IRS_Schedule_C_Summary_2026.html', htmlContent, 'text/html');
+      const htmlContent = `<!DOCTYPE html><html><head><title>Schedule C Summary ${activeTaxYear}</title></head><body style="font-family: monospace; white-space: pre-wrap; padding: 20px;">${summaryText}</body></html>`;
+      downloadFile(`IRS_Schedule_C_Summary_${activeTaxYear}.html`, htmlContent, 'text/html');
       showToast('Schedule C statement exported', 'picture_as_pdf');
     }, 800);
   };
@@ -137,8 +160,8 @@ Audit Readiness: ${auditReadinessPercent}% (${vaultedCount} Verified Photo Proof
     setIsDownloadingCsv(true);
     setTimeout(() => {
       setIsDownloadingCsv(false);
-      const csv = generateLedgerCSV(transactions);
-      downloadFile('LedgerLens_TurboTax_QuickBooks_2026.csv', csv, 'text/csv');
+      const csv = generateLedgerCSV(periodTransactions);
+      downloadFile(`LedgerLens_TurboTax_QuickBooks_${activeTaxYear}.csv`, csv, 'text/csv');
       showToast('Ledger CSV formatted for TurboTax ready', 'table_chart');
     }, 700);
   };
@@ -148,7 +171,7 @@ Audit Readiness: ${auditReadinessPercent}% (${vaultedCount} Verified Photo Proof
     setTimeout(() => {
       setIsDownloadingSocial(false);
       const htmlReport = generateSocialServicesReportHTML(
-        transactions,
+        periodTransactions,
         grossIncome,
         totalExpenses,
         netProfit,
@@ -157,7 +180,7 @@ Audit Readiness: ${auditReadinessPercent}% (${vaultedCount} Verified Photo Proof
         userProfile
       );
       downloadFile(
-        'Social_Services_Income_Verification_Report_2026.html',
+        `Social_Services_Income_Verification_Report_${activeTaxYear}.html`,
         htmlReport,
         'text/html'
       );
@@ -188,23 +211,35 @@ Audit Readiness: ${auditReadinessPercent}% (${vaultedCount} Verified Photo Proof
             </button>
 
             {isPeriodMenuOpen && (
-              <div className="absolute left-0 top-11 z-30 w-64 bg-[#ffffff] rounded-xl shadow-xl border border-[#e5eeff] p-1.5 animate-in fade-in zoom-in-95 duration-150">
-                {['Tax Year 2026 (Q1–Q4)', 'Q4 2026 (Oct–Dec)', 'Q3 2026 (Jul–Sep)', 'Custom Tax Window'].map(
-                  (period) => (
-                    <button
-                      key={period}
-                      type="button"
-                      onClick={() => {
-                        setSelectedPeriod(period);
-                        setIsPeriodMenuOpen(false);
-                        showToast(`Tax period set to ${period}`, 'event');
-                      }}
-                      className="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold text-[#0b1c30] hover:bg-[#eff4ff] transition-colors"
-                    >
-                      {period}
-                    </button>
-                  )
-                )}
+              <div className="absolute left-0 top-11 z-30 w-64 bg-[#ffffff] rounded-xl shadow-xl border border-[#e5eeff] p-1.5 max-h-72 overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
+                {[
+                  'Tax Year 2027 (Q1–Q4)',
+                  'Q1 2027 (Jan–Mar)',
+                  'Q2 2027 (Apr–Jun)',
+                  'Q3 2027 (Jul–Sep)',
+                  'Q4 2027 (Oct–Dec)',
+                  'Tax Year 2026 (Q1–Q4)',
+                  'Q1 2026 (Jan–Mar)',
+                  'Q2 2026 (Apr–Jun)',
+                  'Q3 2026 (Jul–Sep)',
+                  'Q4 2026 (Oct–Dec)',
+                  'Custom Tax Window',
+                ].map((period) => (
+                  <button
+                    key={period}
+                    type="button"
+                    onClick={() => {
+                      setSelectedPeriod(period);
+                      setIsPeriodMenuOpen(false);
+                      showToast(`Tax period set to ${period}`, 'event');
+                    }}
+                    className={`w-full text-left px-3 py-2 rounded-lg text-xs font-semibold hover:bg-[#eff4ff] transition-colors ${
+                      selectedPeriod === period ? 'bg-[#dce9ff] text-[#0b1c30]' : 'text-[#0b1c30]'
+                    }`}
+                  >
+                    {period}
+                  </button>
+                ))}
               </div>
             )}
           </div>

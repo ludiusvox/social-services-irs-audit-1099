@@ -63,17 +63,18 @@ export async function generateTaxBundleZip(
   grossIncome: number,
   totalExpenses: number,
   netProfit: number,
-  userProfile?: UserProfile | null
+  userProfile?: UserProfile | null,
+  taxYear = '2027'
 ): Promise<Blob> {
   const zip = new JSZip();
 
   // 1. Add complete Ledger CSV
   const csvContent = generateLedgerCSV(transactions);
-  zip.file('Schedule_C_Ledger_2026.csv', csvContent);
+  zip.file(`Schedule_C_Ledger_${taxYear}.csv`, csvContent);
 
   // 2. Add Schedule C Summary text report
   const summaryContent = `=====================================================
-LEDGERLENS TAX YEAR 2026 (Q1-Q4) IRS SCHEDULE C AUDIT SUMMARY
+LEDGERLENS TAX YEAR ${taxYear} (Q1-Q4) IRS SCHEDULE C AUDIT SUMMARY
 =====================================================
 Generated: ${new Date().toISOString()}
 Taxpayer: ${userProfile?.name || 'User'} (${userProfile?.businessName || 'Business'})
@@ -105,9 +106,9 @@ Signed & Verified by LedgerLens Vault Engine
   // 3. Add cryptographic manifest
   const manifest = {
     app: 'LedgerLens',
-    version: '2024.4',
+    version: '2027.1',
     timestamp: new Date().toISOString(),
-    taxYear: 2026,
+    taxYear: parseInt(taxYear) || 2027,
     status: 'Safe Harbor Achieved',
     reconciledLogsCount: transactions.length,
     vaultedProofCount: transactions.filter((t) => t.hasReceipt).length,
@@ -121,9 +122,10 @@ Signed & Verified by LedgerLens Vault Engine
     grossIncome,
     totalExpenses,
     netProfit,
-    'CASE-SS-2026-89421',
+    `CASE-SS-${taxYear}-89421`,
     'County Dept of Social Services',
-    userProfile
+    userProfile,
+    taxYear
   );
   zip.file('Income_And_Receipt_Verification_Report.html', reportHtml);
 

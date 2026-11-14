@@ -28,9 +28,10 @@ export const ShareCpaModal: React.FC = () => {
         grossIncome,
         totalExpenses,
         netProfit,
-        userProfile
+        userProfile,
+        '2027'
       );
-      downloadFile('LedgerLens_TaxBundle_2026.zip', zipBlob, 'application/zip');
+      downloadFile('LedgerLens_TaxBundle_2027.zip', zipBlob, 'application/zip');
       showToast(`Tax bundle saved to device Downloads`, 'archive');
       setIsShareCpaOpen(false);
     } catch (e) {
@@ -48,18 +49,19 @@ export const ShareCpaModal: React.FC = () => {
         grossIncome,
         totalExpenses,
         netProfit,
-        userProfile
+        userProfile,
+        '2027'
       );
       const url = URL.createObjectURL(zipBlob);
 
       const shared = await shareDocumentNative(
-        '2026 Schedule C Tax Audit Package',
+        '2027 Schedule C Tax Audit Package',
         `Schedule C Tax Ledger & Receipts for ${userProfile?.name || 'Taxpayer'}. Prepared for ${cpaEmail}.`,
         url
       );
 
       if (!shared) {
-        downloadFile('LedgerLens_TaxBundle_2026.zip', zipBlob, 'application/zip');
+        downloadFile('LedgerLens_TaxBundle_2027.zip', zipBlob, 'application/zip');
         showToast(`Saved bundle locally to attach in Gmail or Outlook`, 'mark_email_read');
       } else {
         showToast('Share sheet opened. Attach to email app.', 'share');
@@ -136,7 +138,7 @@ export const ShareCpaModal: React.FC = () => {
             </span>
           </div>
           <span className="font-label-sm text-[11px] font-mono font-bold text-[#0b1c30] bg-[#ffffff] px-2 py-0.5 rounded shadow-sm">
-            2026-ZIP
+            2027-ZIP
           </span>
         </div>
 
