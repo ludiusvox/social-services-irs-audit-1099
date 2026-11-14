@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useLedger } from '../context/LedgerContext';
 import { generateTaxBundleZip, downloadFile } from '../utils/taxExport';
-import { shareDocumentNative } from '../utils/capacitorNative';
+import { saveAndShareFileNative, shareDocumentNative } from '../utils/capacitorNative';
+import { Capacitor } from '@capacitor/core';
 
 export const ShareCpaModal: React.FC = () => {
   const {
@@ -52,6 +53,19 @@ export const ShareCpaModal: React.FC = () => {
         userProfile,
         '2027'
       );
+
+      if (Capacitor.isNativePlatform()) {
+        await saveAndShareFileNative(
+          zipBlob,
+          'LedgerLens_TaxBundle_2027.zip',
+          '2027 Schedule C Tax Audit Package',
+          `Schedule C Tax Ledger & Receipts for ${userProfile?.name || 'Taxpayer'}. Prepared for ${cpaEmail}.`
+        );
+        showToast('Share sheet opened. Attach to email app.', 'share');
+        setIsShareCpaOpen(false);
+        return;
+      }
+
       const url = URL.createObjectURL(zipBlob);
 
       const shared = await shareDocumentNative(

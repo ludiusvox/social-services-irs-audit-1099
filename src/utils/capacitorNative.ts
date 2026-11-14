@@ -71,37 +71,47 @@ export async function saveAndShareFileNative(
       base64Content = await blobToBase64(fileData);
     }
 
+    let savedDir = Directory.Cache;
     let savedFile;
     try {
-      savedFile = await Filesystem.writeFile({
-        path: fileName,
-        data: base64Content,
-        directory: Directory.Documents,
-        recursive: true,
-      });
-    } catch (err) {
-      // Fallback to Cache if Documents folder requires special permission
       savedFile = await Filesystem.writeFile({
         path: fileName,
         data: base64Content,
         directory: Directory.Cache,
         recursive: true,
       });
+      savedDir = Directory.Cache;
+    } catch (err) {
+      savedFile = await Filesystem.writeFile({
+        path: fileName,
+        data: base64Content,
+        directory: Directory.Data,
+        recursive: true,
+      });
+      savedDir = Directory.Data;
     }
 
-    const fileUri = savedFile.uri;
-
-    // Launch Android share sheet so user can select Gmail, Outlook Mobile, Drive, etc.
+    let fileUri = savedFile.uri;
     try {
-      const canShare = await Share.canShare();
-      if (canShare.value) {
-        await Share.share({
-          title,
-          text,
-          url: fileUri,
-          dialogTitle: 'Save / Share File',
-        });
+      const uriResult = await Filesystem.getUri({
+        path: fileName,
+        directory: savedDir,
+      });
+      if (uriResult && uriResult.uri) {
+        fileUri = uriResult.uri;
       }
+    } catch (e) {
+      console.warn('Could not retrieve exact getUri, using savedFile.uri', e);
+    }
+
+    // Launch Android native share sheet
+    try {
+      await Share.share({
+        title: title || 'Save / Share File',
+        text: text || 'Exported document from LedgerLens',
+        url: fileUri,
+        dialogTitle: title || 'Save / Share File',
+      });
     } catch (shareErr) {
       console.warn('Native share sheet dismissed or unavailable', shareErr);
     }
@@ -109,7 +119,7 @@ export async function saveAndShareFileNative(
     return {
       success: true,
       nativeUri: fileUri,
-      message: `Saved to Documents/${fileName}`,
+      message: `File ready to share: ${fileName}`,
     };
   } catch (err) {
     console.error('Error writing file to device filesystem', err);
