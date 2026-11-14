@@ -79,6 +79,20 @@ npm run dev
 
 ---
 
+## Release Notes (v1.4 → v1.5)
+
+For full details, see [`CHANGELOG.md`](file:///home/aaronl/StudioProjects/social-services-irs-audit-1099/CHANGELOG.md).
+
+### What's New in v1.5.0
+
+- **2027 Tax Year & Quarter Analytics**: Complete support for 2027 tax quarters (`Q1 2027` through `Q4 2027`) with dynamic transaction filtering across income, expenses, and Schedule C allocations.
+- **ZIP Archive Analytics Import**: Ability to restore or import transaction ledgers directly from exported `.ZIP` packages into the embedded Dexie.js / IndexedDB NoSQL store.
+- **Android Native Sharing Fixes**: Expanded `file_paths.xml` FileProvider paths and fixed `blob:` URI sharing so exported `.ZIP`, `.CSV`, and `.HTML` packages open directly in Gmail, Outlook, Drive, or Files on Android devices.
+- **Form Seed Data Clean Up**: Fixed form initialization bug (C-01) so new transaction logging forms open blank instead of pre-filled with sample data.
+- **Dynamic 25% Tax Reserve Calculation**: Replaced fixed tax reserve figures with dynamic `25%` safe harbor estimations (`Math.max(0, netProfit * 0.25)`).
+
+---
+
 ## Testing in Emulator
 
 1. List available virtual devices:
