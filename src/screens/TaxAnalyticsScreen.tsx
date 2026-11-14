@@ -98,7 +98,7 @@ Line 28:  Total Expenses: $${totalExpenses.toLocaleString('en-US', { minimumFrac
 
 PART III: NET PROFIT
 Line 31: Net Profit: $${netProfit.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-Estimated Safe Harbor Tax Reserve (25%): $${(netProfit * 0.25).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+Estimated Safe Harbor Tax Reserve (25%): $${Math.max(0, netProfit * 0.25).toLocaleString('en-US', { minimumFractionDigits: 2 })}
 Audit Readiness: ${auditReadinessPercent}% (${vaultedCount} Verified Photo Proofs)
 `;
       const htmlContent = `<!DOCTYPE html><html><head><title>Schedule C Summary 2026</title></head><body style="font-family: monospace; white-space: pre-wrap; padding: 20px;">${summaryText}</body></html>`;
@@ -301,7 +301,7 @@ Audit Readiness: ${auditReadinessPercent}% (${vaultedCount} Verified Photo Proof
               <span className="material-symbols-outlined text-[15px] text-[#85f8c4]">info</span>
             </div>
             <span className="font-headline-lg text-[26px] font-bold text-[#ffffff] mt-0.5 tabular-nums">
-              ${(netProfit * 0.25).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+              ${Math.max(0, netProfit * 0.25).toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </span>
             <span className="font-body-sm text-[11px] text-[#bec6e0]">
               Self-Employment (15.3%) + Fed/State Est.

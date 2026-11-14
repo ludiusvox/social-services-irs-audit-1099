@@ -88,7 +88,7 @@ Total Deductible Expenses: $${totalExpenses.toLocaleString('en-US', { minimumFra
 
 [NET TAXABLE PROFIT]
 Schedule C Net Profit (Line 31): $${netProfit.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-Recommended Estimated Tax Reserve (25%): $${(netProfit * 0.25).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+Recommended Estimated Tax Reserve (25%): $${Math.max(0, netProfit * 0.25).toLocaleString('en-US', { minimumFractionDigits: 2 })}
 - Self-Employment Tax (15.3%): $${(netProfit * 0.153).toLocaleString('en-US', { minimumFractionDigits: 2 })}
 - Federal & State Estimated (9.7%): $${(netProfit * 0.097).toLocaleString('en-US', { minimumFractionDigits: 2 })}
 
