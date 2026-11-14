@@ -22,6 +22,7 @@ interface LedgerContextType {
   saveUserProfile: (profile: UserProfile) => void;
   transactions: Transaction[];
   addTransaction: (tx: Omit<Transaction, 'id' | 'createdAt' | 'group'>) => void;
+  importTransactions: (transactions: Transaction[]) => void;
   attachReceiptToTransaction: (txId: string, receipt: ReceiptData) => void;
   deleteTransaction: (txId: string) => void;
   selectedReceipt: ReceiptData | null;
@@ -235,6 +236,20 @@ export const LedgerProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     showToast('Saved to secure ledger', 'database');
   };
 
+  const importTransactions = async (newTxs: Transaction[]) => {
+    setTransactions((prev) => {
+      const combined = [...newTxs, ...prev];
+      const unique = Array.from(new Map(combined.map((item) => [item.id, item])).values());
+      return unique;
+    });
+    try {
+      await db.transactions.bulkPut(newTxs);
+    } catch (err) {
+      console.error('[LedgerLens NoSQL] Failed importing transactions', err);
+    }
+    showToast(`Imported ${newTxs.length} entries successfully`, 'database');
+  };
+
   const attachReceiptToTransaction = async (txId: string, receipt: ReceiptData) => {
     let updatedTx: Transaction | null = null;
 
@@ -337,6 +352,7 @@ export const LedgerProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         saveUserProfile,
         transactions,
         addTransaction,
+        importTransactions,
         attachReceiptToTransaction,
         deleteTransaction,
         selectedReceipt,

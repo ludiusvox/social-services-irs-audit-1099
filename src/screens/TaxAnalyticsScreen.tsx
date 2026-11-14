@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useLedger } from '../context/LedgerContext';
 import { downloadFile, generateLedgerCSV, generateTaxBundleZip, generateSocialServicesReportHTML } from '../utils/taxExport';
+import { importTransactionsFromZip } from '../utils/importZip';
 
 export const TaxAnalyticsScreen: React.FC = () => {
   const {
@@ -12,6 +13,7 @@ export const TaxAnalyticsScreen: React.FC = () => {
     allocatedTaxReserve,
     allocateReserve,
     transactions,
+    importTransactions,
     auditReadinessPercent,
     vaultedCount,
     unreconciledCount,
@@ -28,6 +30,30 @@ export const TaxAnalyticsScreen: React.FC = () => {
   const [isDownloadingCsv, setIsDownloadingCsv] = useState(false);
   const [isDownloadingSocial, setIsDownloadingSocial] = useState(false);
   const [isPeriodMenuOpen, setIsPeriodMenuOpen] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImportZip = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setIsImporting(true);
+      try {
+        const importedTxs = await importTransactionsFromZip(file);
+        if (importedTxs.length > 0) {
+          importTransactions(importedTxs);
+        } else {
+          showToast('No valid transactions found in zip archive', 'warning');
+        }
+      } catch (err: any) {
+        console.error('Failed to import ZIP bundle:', err);
+        showToast(err.message || 'Failed to import ZIP archive', 'warning');
+      } finally {
+        setIsImporting(false);
+        if (e.target) e.target.value = '';
+      }
+    }
+  };
 
   const expenses = transactions.filter(t => t.type === 'expense');
   const reserveNeeded = Math.max(0, netProfit * 0.25);
@@ -575,12 +601,65 @@ Audit Readiness: ${auditReadinessPercent}% (${vaultedCount} Verified Photo Proof
 
       {/* One-Tap Export & Reporting Suite */}
       <div className="flex flex-col space-y-2">
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".zip"
+          className="hidden"
+          onChange={handleImportZip}
+        />
+
         <div className="flex items-center justify-between px-0.5">
           <h3 className="font-headline-sm text-[16px] font-bold text-[#0b1c30]">
-            Export & Reporting Suite
+            Export & Import Suite
           </h3>
           <span className="font-label-sm text-[11px] text-[#45464d]">Tax Season Ready</span>
         </div>
+
+        {/* Primary Action: Import Bundle */}
+        <div className="p-4 rounded-xl bg-[#eff4ff] shadow-sm flex flex-col space-y-3 border border-[#d3e4fe]">
+          <div className="flex items-start justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-lg bg-[#006c4a] text-[#ffffff] flex items-center justify-center">
+                <span className="material-symbols-outlined text-[24px]">unarchive</span>
+              </div>
+              <div>
+                <h4 className="font-headline-sm text-[15px] font-bold text-[#0b1c30]">
+                  Import Analytics & Ledger (.ZIP)
+                </h4>
+                <p className="font-body-sm text-[12px] text-[#45464d]">
+                  Restore or sync transactions from a LedgerLens ZIP archive
+                </p>
+              </div>
+            </div>
+            <span className="font-label-sm text-[10px] bg-[#006c4a] text-[#ffffff] px-2 py-0.5 rounded-full font-bold">
+              Restore
+            </span>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isImporting}
+            className="w-full py-3 px-4 rounded-xl bg-[#006c4a] text-[#ffffff] hover:opacity-90 active:scale-[0.99] transition-all flex items-center justify-center gap-2 font-label-lg text-[13px] font-semibold shadow-sm disabled:opacity-60"
+          >
+            {isImporting ? (
+              <>
+                <span className="material-symbols-outlined text-[18px] animate-spin">
+                  progress_activity
+                </span>
+                <span>Restoring Archive...</span>
+              </>
+            ) : (
+              <>
+                <span className="material-symbols-outlined text-[18px]">file_upload</span>
+                <span>Import Tax Bundle ZIP</span>
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* Primary Action: Full Bundle */}
 
         {/* Primary Action: Full Bundle */}
         <div className="p-4 rounded-xl bg-[#ffffff] shadow-sm flex flex-col space-y-3 border border-[#e5eeff]/60">
