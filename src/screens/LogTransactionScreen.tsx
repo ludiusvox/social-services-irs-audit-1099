@@ -8,7 +8,7 @@ export const LogTransactionScreen: React.FC = () => {
   const { addTransaction, setActiveScreen, logFormPreset, setLogFormPreset, transactions } = useLedger();
 
   const [type, setType] = useState<TransactionType>(logFormPreset?.type || 'income');
-  const [amount, setAmount] = useState<string>('142.50');
+  const [amount, setAmount] = useState<string>('');
   const [method, setMethod] = useState<PaymentMethod>('cash');
   const [counterparty, setCounterparty] = useState<string>('');
   const [category, setCategory] = useState<string>('client-payment');
@@ -16,10 +16,10 @@ export const LogTransactionScreen: React.FC = () => {
   const [memo, setMemo] = useState<string>('');
   
   // Attached receipt state
-  const [hasReceipt, setHasReceipt] = useState<boolean>(true);
-  const [receiptImage, setReceiptImage] = useState<string>(INITIAL_RECEIPTS.apexSampleScan.imageUrl);
-  const [receiptFileName, setReceiptFileName] = useState<string>('IMG_20240518_APX.jpg');
-  const [receiptFileSize, setReceiptFileSize] = useState<string>('2.4 MB');
+  const [hasReceipt, setHasReceipt] = useState<boolean>(false);
+  const [receiptImage, setReceiptImage] = useState<string>('');
+  const [receiptFileName, setReceiptFileName] = useState<string>('');
+  const [receiptFileSize, setReceiptFileSize] = useState<string>('');
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [isSaved, setIsSaved] = useState<boolean>(false);
 
@@ -52,6 +52,11 @@ export const LogTransactionScreen: React.FC = () => {
 
   const handleTypeSwitch = (newType: TransactionType) => {
     setType(newType);
+    if (newType === 'expense' && category === 'client-payment') {
+      setCategory('supplies');
+    } else if (newType === 'income') {
+      setCategory('client-payment');
+    }
   };
 
   const recentCounterparties = useMemo(() => {
@@ -430,7 +435,7 @@ export const LogTransactionScreen: React.FC = () => {
             </h3>
           </div>
           <span className="px-2 py-0.5 rounded-full bg-[#82f5c1]/60 text-[#00714e] font-label-sm text-[11px] font-semibold">
-            IndexedDB Ready
+            Local Storage Ready
           </span>
         </div>
 
@@ -464,7 +469,7 @@ export const LogTransactionScreen: React.FC = () => {
                     {receiptFileName}
                   </p>
                   <p className="font-body-sm text-[11px] text-[#45464d]">
-                    May 18, 2024 • 14:32 PM ({receiptFileSize})
+                    {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} • {receiptFileSize}
                   </p>
                 </div>
 
@@ -507,7 +512,7 @@ export const LogTransactionScreen: React.FC = () => {
           <div className="flex items-center gap-1 mt-2 text-[#00714e] bg-[#82f5c1]/40 px-2.5 py-1 rounded-full">
             <span className="material-symbols-outlined text-[14px]">lock_open</span>
             <span className="font-label-sm text-[11px]">
-              Stored locally in DOM / IndexedDB database
+              Stored securely on this phone
             </span>
           </div>
         </div>

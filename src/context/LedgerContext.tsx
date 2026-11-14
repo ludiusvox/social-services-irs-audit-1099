@@ -210,7 +210,7 @@ export const LedgerProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       console.error('[LedgerLens NoSQL] Failed saving user profile', err);
     }
     setActiveScreen('overview');
-    showToast('Profile saved to embedded NoSQL database', 'database');
+    showToast('Profile saved securely', 'database');
   };
 
   const addTransaction = async (txData: Omit<Transaction, 'id' | 'createdAt' | 'group'>) => {
@@ -232,7 +232,7 @@ export const LedgerProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       console.error('[LedgerLens NoSQL] Failed inserting transaction', err);
     }
 
-    showToast('Saved to embedded NoSQL DB & Vault', 'database');
+    showToast('Saved to secure ledger', 'database');
   };
 
   const attachReceiptToTransaction = async (txId: string, receipt: ReceiptData) => {

@@ -23,6 +23,13 @@ export const OverviewScreen: React.FC = () => {
   const wholeProfit = parseInt(netProfitParts[0]).toLocaleString('en-US');
   const decimalProfit = netProfitParts[1];
 
+  const greeting = useMemo(() => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  }, []);
+
   // Recent transactions to display on overview
   const recentTransactions = transactions.slice(0, 4);
 
@@ -90,7 +97,7 @@ export const OverviewScreen: React.FC = () => {
             <div className="min-w-0">
               <div className="flex items-center gap-1.5">
                 <span className="font-headline-sm text-[16px] font-bold text-[#0b1c30] truncate">
-                  Good morning, {userProfile?.name?.split(' ')[0] || 'User'}
+                  {greeting}, {userProfile?.name?.split(' ')[0] || 'User'}
                 </span>
                 <span className="inline-flex w-2 h-2 rounded-full bg-[#006c4a] animate-pulse" title="System Live" />
               </div>
@@ -113,10 +120,12 @@ export const OverviewScreen: React.FC = () => {
           <span className="font-label-md text-[12px] text-[#7c839b] tracking-wider uppercase font-semibold">
             Total Net Profit
           </span>
-          <span className="inline-flex items-center gap-1 bg-[#006c4a]/30 text-[#85f8c4] px-2.5 py-0.5 rounded-full font-label-sm text-[11px] font-semibold">
-            <span className="material-symbols-outlined text-[14px]">trending_up</span>
-            +14.2%
-          </span>
+          {transactions.length > 5 && (
+            <span className="inline-flex items-center gap-1 bg-[#006c4a]/30 text-[#85f8c4] px-2.5 py-0.5 rounded-full font-label-sm text-[11px] font-semibold">
+              <span className="material-symbols-outlined text-[14px]">trending_up</span>
+              +14.2%
+            </span>
+          )}
         </div>
 
         <div className="flex items-baseline space-x-1 mb-4">

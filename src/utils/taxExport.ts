@@ -1,5 +1,7 @@
 import JSZip from 'jszip';
 import { Transaction, UserProfile } from '../types';
+import { Capacitor } from '@capacitor/core';
+import { saveAndShareFileNative } from './capacitorNative';
 
 export function generateLedgerCSV(transactions: Transaction[]): string {
   const headers = [
@@ -37,8 +39,14 @@ export function generateLedgerCSV(transactions: Transaction[]): string {
   return [headers.join(','), ...rows.map((r) => r.join(','))].join('\r\n');
 }
 
-export function downloadFile(filename: string, content: Blob | string, mimeType = 'text/csv;charset=utf-8;') {
+export async function downloadFile(filename: string, content: Blob | string, mimeType = 'text/csv;charset=utf-8;') {
   const blob = typeof content === 'string' ? new Blob([content], { type: mimeType }) : content;
+
+  if (Capacitor.isNativePlatform()) {
+    await saveAndShareFileNative(blob, filename, 'Tax Export', 'Here is your exported tax document.');
+    return;
+  }
+
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.setAttribute('href', url);

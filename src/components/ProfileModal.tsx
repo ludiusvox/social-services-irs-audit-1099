@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLedger } from '../context/LedgerContext';
-import { INITIAL_TRANSACTIONS } from '../data/initialData';
 
 export const ProfileModal: React.FC = () => {
-  const { isProfileOpen, setIsProfileOpen, showToast, transactions, userProfile, saveUserProfile } = useLedger();
+  const { isProfileOpen, setIsProfileOpen, transactions, userProfile } = useLedger();
+  const [showSignOutConfirm, setShowSignOutConfirm] = useState(false);
 
   if (!isProfileOpen) return null;
 
@@ -17,7 +17,10 @@ export const ProfileModal: React.FC = () => {
   return (
     <div
       className="fixed inset-0 z-50 flex items-end justify-center bg-[#0b1c30]/40 backdrop-blur-sm p-4 pb-safe"
-      onClick={() => setIsProfileOpen(false)}
+      onClick={() => {
+        setIsProfileOpen(false);
+        setShowSignOutConfirm(false);
+      }}
     >
       <div
         className="w-full max-w-md bg-[#ffffff] rounded-2xl shadow-2xl p-5 space-y-4 animate-in slide-in-from-bottom duration-300"
@@ -36,52 +39,83 @@ export const ProfileModal: React.FC = () => {
             </div>
           </div>
           <button
-            onClick={() => setIsProfileOpen(false)}
+            onClick={() => {
+              setIsProfileOpen(false);
+              setShowSignOutConfirm(false);
+            }}
             className="w-8 h-8 rounded-full bg-[#eff4ff] flex items-center justify-center text-[#45464d]"
           >
             <span className="material-symbols-outlined text-[18px]">close</span>
           </button>
         </div>
 
-        <div className="space-y-2 text-[13px]">
-          <div className="p-3 bg-[#eff4ff] rounded-xl flex items-center justify-between">
-            <div className="flex items-center gap-2 text-[#0b1c30]">
-              <span className="material-symbols-outlined text-[18px] text-[#006c4a]">sd_storage</span>
-              <span>Double-Entry Local Storage</span>
+        {showSignOutConfirm ? (
+          <div className="bg-[#ffdad6]/30 border border-[#ba1a1a]/30 rounded-xl p-4 space-y-3">
+            <div className="flex items-center gap-2 text-[#ba1a1a]">
+              <span className="material-symbols-outlined text-[20px]">warning</span>
+              <h4 className="font-bold text-sm">Confirm Sign Out</h4>
             </div>
-            <span className="text-[11px] font-semibold text-[#006c4a] bg-[#82f5c1]/30 px-2 py-0.5 rounded-full">
-              Encrypted Offline
-            </span>
-          </div>
-
-          <div className="p-3 bg-[#eff4ff] rounded-xl flex items-center justify-between">
-            <div className="flex items-center gap-2 text-[#0b1c30]">
-              <span className="material-symbols-outlined text-[18px] text-[#565e74]">folder_zip</span>
-              <span>IndexedDB Photo Vault</span>
+            <p className="text-xs text-[#45464d] leading-relaxed">
+              Your financial records and ledger data will remain securely stored on this phone. Are you sure you want to sign out?
+            </p>
+            <div className="flex items-center gap-2 pt-1">
+              <button
+                onClick={() => setShowSignOutConfirm(false)}
+                className="flex-1 py-2 px-3 rounded-lg bg-[#eff4ff] text-[#0b1c30] text-xs font-semibold hover:bg-[#dce9ff] transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSignOut}
+                className="flex-1 py-2 px-3 rounded-lg bg-[#ba1a1a] text-[#ffffff] text-xs font-semibold hover:opacity-90 transition-opacity"
+              >
+                Sign Out
+              </button>
             </div>
-            <span className="text-[11px] font-mono text-[#45464d]">
-              {transactions.filter((t) => t.hasReceipt).length} files cached
-            </span>
           </div>
+        ) : (
+          <>
+            <div className="space-y-2 text-[13px]">
+              <div className="p-3 bg-[#eff4ff] rounded-xl flex items-center justify-between">
+                <div className="flex items-center gap-2 text-[#0b1c30]">
+                  <span className="material-symbols-outlined text-[18px] text-[#006c4a]">sd_storage</span>
+                  <span>Double-Entry Local Storage</span>
+                </div>
+                <span className="text-[11px] font-semibold text-[#006c4a] bg-[#82f5c1]/30 px-2 py-0.5 rounded-full">
+                  Encrypted Offline
+                </span>
+              </div>
 
-          <div className="p-3 bg-[#eff4ff] rounded-xl flex items-center justify-between">
-            <div className="flex items-center gap-2 text-[#0b1c30]">
-              <span className="material-symbols-outlined text-[18px] text-[#565e74]">account_balance</span>
-              <span>Accounting Method</span>
+              <div className="p-3 bg-[#eff4ff] rounded-xl flex items-center justify-between">
+                <div className="flex items-center gap-2 text-[#0b1c30]">
+                  <span className="material-symbols-outlined text-[18px] text-[#565e74]">folder_zip</span>
+                  <span>Secure Photo Vault</span>
+                </div>
+                <span className="text-[11px] font-mono text-[#45464d]">
+                  {transactions.filter((t) => t.hasReceipt).length} files cached
+                </span>
+              </div>
+
+              <div className="p-3 bg-[#eff4ff] rounded-xl flex items-center justify-between">
+                <div className="flex items-center gap-2 text-[#0b1c30]">
+                  <span className="material-symbols-outlined text-[18px] text-[#565e74]">account_balance</span>
+                  <span>Accounting Method</span>
+                </div>
+                <span className="text-[11px] font-semibold text-[#0b1c30]">{userProfile?.accountingMethod || "Cash / Schedule C"}</span>
+              </div>
             </div>
-            <span className="text-[11px] font-semibold text-[#0b1c30]">{userProfile?.accountingMethod || "Cash / Schedule C"}</span>
-          </div>
-        </div>
 
-        <div className="pt-2 flex flex-col gap-2">
-          <button
-            onClick={handleSignOut}
-            className="w-full py-2.5 px-4 rounded-xl border border-[#c6c6cd] text-[#45464d] hover:text-[#ba1a1a] hover:border-[#ba1a1a] text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
-          >
-            <span className="material-symbols-outlined text-[16px]">logout</span>
-            <span>Sign Out</span>
-          </button>
-        </div>
+            <div className="pt-2 flex flex-col gap-2">
+              <button
+                onClick={() => setShowSignOutConfirm(true)}
+                className="w-full py-2.5 px-4 rounded-xl border border-[#c6c6cd] text-[#45464d] hover:text-[#ba1a1a] hover:border-[#ba1a1a] text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
+              >
+                <span className="material-symbols-outlined text-[16px]">logout</span>
+                <span>Sign Out</span>
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

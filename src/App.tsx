@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { LedgerProvider, useLedger } from './context/LedgerContext';
 import { Header } from './components/Header';
 import { BottomNav } from './components/BottomNav';
@@ -15,7 +15,25 @@ import { ShareCpaModal } from './components/ShareCpaModal';
 import { SocialServicesModal } from './components/SocialServicesModal';
 
 const AppContent: React.FC = () => {
-  const { activeScreen } = useLedger();
+  const { activeScreen, setActiveScreen } = useLedger();
+
+  // Android hardware back button handler
+  useEffect(() => {
+    const handlePopState = () => {
+      if (activeScreen !== 'overview' && activeScreen !== 'startup-profile') {
+        setActiveScreen('overview');
+        window.history.pushState({ screen: 'overview' }, '');
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    // Push initial state
+    window.history.pushState({ screen: activeScreen }, '');
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [activeScreen, setActiveScreen]);
 
   if (activeScreen === 'startup-profile') {
     return (

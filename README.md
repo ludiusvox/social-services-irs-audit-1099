@@ -30,8 +30,9 @@
 
 ### Prerequisites
 
-- Node.js (v18+)
-- JDK 21 / Android SDK (for Android builds)
+- Node.js (v18+ / v26)
+- JDK 21 (`export JAVA_HOME="/usr/lib/jvm/java-21-openjdk-amd64"`)
+- Android SDK & Platform Tools (`/home/aaronl/Android/Sdk`)
 
 ### Installation
 
@@ -40,7 +41,7 @@
 git clone https://github.com/ludiusvox/social-services-irs-audit-1099.git
 cd social-services-irs-audit-1099
 
-# Install dependencies
+# Install dependencies (using legacy peer deps for Vite 8 / Tailwind v4 compatibility)
 npm install --legacy-peer-deps
 ```
 
@@ -50,22 +51,49 @@ npm install --legacy-peer-deps
 npm run dev
 ```
 
-### Building for Android
+### Building & Signing for Android
 
-```bash
-# Build web bundle
-npm run build
+1. **Build web bundle & sync to Capacitor**:
+   ```bash
+   npm run build
+   npx cap copy android
+   ```
 
-# Sync assets to Capacitor Android
-npx cap copy android
+2. **Android Keystore (`release.jks` / `release.keystore`)**:
+   The app is configured for signed release builds using `android/app/release.jks` (and `release.keystore`). A secure release signing key can be generated with:
+   ```bash
+   keytool -genkey -v -keystore android/app/release.jks -keyalg RSA -keysize 2048 -validity 10000 -alias ledgerlens-key -storepass ledgerlens123 -keypass ledgerlens123
+   ```
 
-# Compile signed Release APK
-cd android
-.\gradlew.bat assembleRelease
-```
+3. **Compile APK**:
+   ```bash
+   cd android
+   export JAVA_HOME="/usr/lib/jvm/java-21-openjdk-amd64"
+   ./gradlew assembleRelease
+   # or for debug:
+   ./gradlew assembleDebug
+   ```
 
-The compiled release signed APK will be generated at:
-`android/app/build/outputs/apk/release/app-release.apk`
+   The compiled release APK is generated at:
+   `android/app/build/outputs/apk/release/app-release.apk`
+
+---
+
+## Testing in Emulator
+
+1. List available virtual devices:
+   ```bash
+   /home/aaronl/Android/Sdk/emulator/emulator -list-avds
+   ```
+2. Start emulator:
+   ```bash
+   /home/aaronl/Android/Sdk/emulator/emulator -avd Medium_Phone_API_37.0 -no-audio -no-snapshot-load &
+   ```
+3. Install and run built APK:
+   ```bash
+   export PATH="/home/aaronl/Android/Sdk/platform-tools:$PATH"
+   adb install android/app/build/outputs/apk/debug/app-debug.apk
+   ```
 
 ---
 

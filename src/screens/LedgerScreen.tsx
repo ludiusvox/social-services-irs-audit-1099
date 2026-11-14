@@ -258,7 +258,7 @@ export const LedgerScreen: React.FC = () => {
                 {totalLogs}
               </span>
               <span className="font-label-sm text-[11px] text-[#006c4a] flex items-center font-semibold">
-                <span className="material-symbols-outlined text-[14px]">database</span>NoSQL Active
+                <span className="material-symbols-outlined text-[14px]">database</span>Secure Ledger
               </span>
             </div>
           </div>
@@ -542,7 +542,7 @@ export const LedgerScreen: React.FC = () => {
           <p className="font-body-sm text-xs text-[#45464d] max-all-w-[280px]">
             {searchQuery || activeFilter !== 'all' || selectedMonth !== 'All'
               ? 'Try adjusting your search terms or filter selection.'
-              : 'Log your first income or expense item to populate your persistent NoSQL ledger.'}
+              : 'Log your first income or expense item to populate your secure ledger.'}
           </p>
         </div>
       )}

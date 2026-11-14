@@ -1,6 +1,7 @@
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { Filesystem, Directory } from '@capacitor/filesystem';
 import { Share } from '@capacitor/share';
+import { Capacitor } from '@capacitor/core';
 
 export interface PhotoCaptureResult {
   url: string;
@@ -33,21 +34,43 @@ export async function takeReceiptPhotoNative(): Promise<PhotoCaptureResult | nul
   return null;
 }
 
+const blobToBase64 = (blob: Blob) => {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      if (typeof reader.result === 'string') {
+        // Return base64 without data:image/jpeg;base64, prefix
+        const b64 = reader.result.split(',')[1];
+        resolve(b64);
+      } else {
+        reject(new Error('Failed to convert Blob to Base64 string'));
+      }
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+};
+
 /**
- * Saves a base64-encoded PDF or file to the Android device's Documents folder and triggers system share sheet
+ * Saves a base64-encoded file or Blob to the Android device's Documents folder and triggers system share sheet
  */
-export async function saveAndSharePdfNative(
-  pdfBase64Data: string,
+export async function saveAndShareFileNative(
+  fileData: string | Blob,
   fileName: string,
   title: string,
   text: string
 ): Promise<{ success: boolean; nativeUri?: string; message: string }> {
-  // Extract base64 content
-  const base64Content = pdfBase64Data.includes('base64,')
-    ? pdfBase64Data.split('base64,')[1]
-    : pdfBase64Data;
-
   try {
+    let base64Content = '';
+
+    if (typeof fileData === 'string') {
+      base64Content = fileData.includes('base64,')
+        ? fileData.split('base64,')[1]
+        : fileData;
+    } else {
+      base64Content = await blobToBase64(fileData);
+    }
+
     let savedFile;
     try {
       savedFile = await Filesystem.writeFile({
@@ -76,7 +99,7 @@ export async function saveAndSharePdfNative(
           title,
           text,
           url: fileUri,
-          dialogTitle: 'Save / Share PDF Report',
+          dialogTitle: 'Save / Share File',
         });
       }
     } catch (shareErr) {
@@ -89,10 +112,10 @@ export async function saveAndSharePdfNative(
       message: `Saved to Documents/${fileName}`,
     };
   } catch (err) {
-    console.error('Error writing PDF file to device filesystem', err);
+    console.error('Error writing file to device filesystem', err);
     return {
       success: false,
-      message: 'Failed to write PDF file to device storage',
+      message: 'Failed to write file to device storage',
     };
   }
 }
@@ -132,3 +155,16 @@ export async function shareDocumentNative(title: string, text: string, url?: str
 
   return false;
 }
+
+/**
+ * Alias / helper for saving and sharing PDF files natively
+ */
+export async function saveAndSharePdfNative(
+  pdfBlobOrBase64: string | Blob,
+  fileName: string,
+  title: string,
+  text: string
+): Promise<{ success: boolean; nativeUri?: string; message: string }> {
+  return saveAndShareFileNative(pdfBlobOrBase64, fileName, title, text);
+}
+

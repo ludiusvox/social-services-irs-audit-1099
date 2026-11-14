@@ -26,7 +26,7 @@ export const NotificationsModal: React.FC = () => {
     {
       id: '3',
       title: 'Double-Entry Vault Synced',
-      desc: `All ${transactions.length} entries backed up to client-side encrypted IndexedDB store.`,
+      desc: `All ${transactions.length} entries backed up to secure local ledger storage.`,
       time: 'Yesterday',
       icon: 'cloud_done',
       color: 'text-[#565e74] bg-[#e5eeff]',
